@@ -208,3 +208,5 @@ def test_remove_image_history(client: TestClient, db_session: Session):
 
 if __name__ == "__main__":
     pytest.main(["-v"])
+    
+    # pytest test.py -v
