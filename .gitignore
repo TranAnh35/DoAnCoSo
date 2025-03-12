@@ -1,1 +1,2 @@
-src/
+.vscode/
+__pycache__/
