@@ -1,6 +1,6 @@
 // src/services/api.ts
 import axios from 'axios';
-import { UserRegister, UserSignin, AuthResponse, GuestSessionResponse, ImageHistoryRequest, ImageHistoryResponse } from '../types/api';
+import { UserRegister, UserSignin, AuthResponse, GuestSessionResponse, ImageHistoryRequest, ImageHistoryResponse, QualityEvaluationResponse, ProcessImageResponse } from '../types/api';
 
 const API_URL = 'http://localhost:8000'; // URL của backend FastAPI
 
@@ -44,5 +44,31 @@ export const getImageHistory = async (userId?: number, sessionId?: number): Prom
 
 export const removeImageHistory = async (sessionId: number): Promise<{ message: string }> => {
   const response = await api.delete<{ message: string }>(`/image/history/remove?session_id=${sessionId}`);
+  return response.data;
+};
+
+export const processImage = async (  file: File,  scale: number): Promise<ProcessImageResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('scale', scale.toString());
+
+  const response = await api.post<ProcessImageResponse>('/process-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+export const evaluateQuality = async (srImage: File, hrImage: File): Promise<QualityEvaluationResponse> => {
+  const formData = new FormData();
+  formData.append('sr_image', srImage);
+  formData.append('hr_image', hrImage);
+
+  const response = await api.post<QualityEvaluationResponse>('/evaluate-quality', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };
