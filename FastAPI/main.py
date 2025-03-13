@@ -1,14 +1,24 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from database import get_db, register_user, signin_user, get_information, create_guest_session, drop_guest_session, save_image_history, remove_image_history, get_image_history
+from models import process_image 
 from pydantic import BaseModel
 from typing import Optional
 import torch
 import cv2
 import numpy as np
 from base64 import b64encode, b64decode
+from basicsr.metrics import calculate_psnr, calculate_ssim
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class UserRegister(BaseModel):
     username: str
@@ -28,6 +38,11 @@ class ImageHistoryRequest(BaseModel):
 
 class ImageHistoryResponse(BaseModel):
     message: str
+    
+class ProcessImageRequest(BaseModel):
+    scale: int
+    user_id: Optional[int] = None
+    session_id: Optional[int] = None
 
 @app.post("/register")
 def register(user: UserRegister, db: Session = Depends(get_db)):
@@ -69,9 +84,6 @@ def save_history(request: ImageHistoryRequest, db: Session = Depends(get_db)):
     input_img = cv2.imdecode(np.frombuffer(input_bytes, np.uint8), cv2.IMREAD_COLOR)
     output_img = cv2.imdecode(np.frombuffer(output_bytes, np.uint8), cv2.IMREAD_COLOR)
     
-    # TODO: Add super-resolution processing here if needed
-    # For now, we just save the images as-is
-    
     save_image_history(db, request.user_id, request.session_id, input_img, output_img, request.scale)
     return {"message": "Image history saved"}
 
@@ -99,6 +111,38 @@ def get_history(user_id: Optional[int] = None, session_id: Optional[int] = None,
             "timestamp": timestamp.isoformat()
         }
     return formatted_history
+    
+@app.post("/process-image")
+async def process_image_endpoint(
+    file: UploadFile = File(...),
+    scale: int = 2
+):
+    # Đọc file ảnh từ UploadFile
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    result = process_image(image, scale)
+    return result
+
+@app.post("/evaluate-quality")
+async def evaluate_quality_endpoint(
+    sr_image: UploadFile = File(...),
+    hr_image: UploadFile = File(...)
+):
+    sr_contents = await sr_image.read()
+    hr_contents = await hr_image.read()
+    
+    sr_img = cv2.imdecode(np.frombuffer(sr_contents, np.uint8), cv2.IMREAD_COLOR)
+    hr_img = cv2.imdecode(np.frombuffer(hr_contents, np.uint8), cv2.IMREAD_COLOR)
+    
+    # Đảm bảo cùng kích thước
+    hr_img = cv2.resize(hr_img, (sr_img.shape[1], sr_img.shape[0]))
+    
+    psnr_value = calculate_psnr(sr_img, hr_img, crop_border=4, test_y_channel=True)
+    ssim_value = calculate_ssim(sr_img, hr_img, crop_border=4, test_y_channel=True)
+    
+    return {"psnr": psnr_value, "ssim": ssim_value}
 
 if __name__ == "__main__":
     import uvicorn
