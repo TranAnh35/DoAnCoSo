@@ -1,9 +1,9 @@
 // src/App.tsx
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Register from './pages/Register';
-import Signin from './pages/Signin';
-import ImageProcess from './pages/ImageProcess';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Register from "./pages/SignUp";
+import Signin from "./pages/SignIn";
+import ImageProcess from "./pages/ImageProcess";
 
 const App: React.FC = () => {
   return (
