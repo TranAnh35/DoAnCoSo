@@ -83,7 +83,7 @@ const Signin: React.FC = () => {
               style={{ marginTop: "10px" }}
               onClick={() => {
                 localStorage.setItem("guest", "true");
-                navigate("/ImageProcess"); // Chuyển hướng bằng useNavigate
+                navigate("/process"); // Chuyển hướng bằng useNavigate
               }}
             >
               Đăng nhập Guest
