@@ -1,7 +1,7 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import create_engine
+from typing import Optional, Dict
 import numpy as np
 import bcrypt
 import uuid
@@ -31,45 +31,110 @@ Khi đang ở trong Register Form đã nhập đầy đủ thông tin và không
 Khi có lỗi xảy ra thì khi nhất nút sẽ không chuyển sang Sign_in Form nữa mà giữ nguyên
 """
 
-def register_user(db, username, email, password):
-    if not username or not email or not password:
-        return None, "Vui lòng nhập đầy đủ thông tin!", False
+def register_user(db: Session, username: str, email: str, password: str) -> tuple[Optional[int], Dict[str, str], bool]:
+    errors: Dict[str, str] = {}
 
-    email_regex = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-    if not re.match(email_regex, email):
-        return None, "Email không hợp lệ!", False
+    if not username:
+        errors["username"] = "Vui lòng nhập tên người dùng!"
+    if not email:
+        errors["email"] = "Vui lòng nhập email!"
+    if not password:
+        errors["password"] = "Vui lòng nhập mật khẩu!"
 
-    if len(password) < 6:
-        return None, "Mật khẩu phải có ít nhất 6 ký tự!", False
+    if errors:
+        return None, errors, False
+
+    if "@" not in email:
+        errors["email"] = "Email phải chứa ký tự '@'!"
+    else:
+        local_part, domain_part = email.split("@", 1)  # Chia email thành local part và domain part
+        if not local_part:
+            errors["email"] = "Phần trước '@' không được để trống!"
+        elif not domain_part:
+            errors["email"] = "Phần sau '@' không được để trống!"
+        elif "." not in domain_part:
+            errors["email"] = "Phần tên miền phải chứa ít nhất một dấu chấm (.)!"
+        else:
+            domain, tld = domain_part.rsplit(".", 1)  # Chia domain part thành domain và TLD
+            if not domain:
+                errors["email"] = "Tên miền không được để trống!"
+            elif not tld:
+                errors["email"] = "Phần mở rộng tên miền (TLD) không được để trống!"
+            else:
+                email_regex = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+                if not re.match(email_regex, email):
+                    errors["email"] = "Email chứa ký tự không hợp lệ!"
+
+    if len(password) < 8:
+        errors["password"] = "Mật khẩu phải có ít nhất 8 ký tự!"
+    elif not re.search(r"[A-Z]", password):
+        errors["password"] = "Mật khẩu phải chứa ít nhất một chữ cái in hoa!"
+    elif not re.search(r"[a-z]", password):
+        errors["password"] = "Mật khẩu phải chứa ít nhất một chữ cái thường!"
+    elif not re.search(r"[0-9]", password):
+        errors["password"] = "Mật khẩu phải chứa ít nhất một số!"
+    elif not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        errors["password"] = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt!"
+
+    if errors:
+        return None, errors, False
 
     lower_username = username.lower()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     from schemas import User
+    
+    if db.query(User).filter(User.username == lower_username).first():
+        errors["username"] = "Tên người dùng đã tồn tại!"
+    if db.query(User).filter(User.email == email).first():
+        errors["email"] = "Email đã tồn tại!"
+
+    if errors:
+        return None, errors, False
+
+    from schemas import User
+
     new_user = User(username=lower_username, email=email, password=hashed_password)
     try:
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        return new_user.id, "Đăng ký thành công!", True
+        return new_user.id, {}, True
     except IntegrityError:
         db.rollback()
-        return None, "Username hoặc email đã tồn tại!", False
+        if db.query(User).filter(User.username == lower_username).first():
+            errors["username"] = "Tên người dùng đã tồn tại!"
+        if db.query(User).filter(User.email == email).first():
+            errors["email"] = "Email đã tồn tại!"
+        return None, errors, False
     except Exception as e:
         db.rollback()
-        return None, f"Lỗi không xác định: {str(e)}", False
+        errors["username"] = f"Lỗi không xác định: {str(e)}"
+        return None, errors, False
 
-def signin_user(db, username, password):
-    if not username or not password:
-        return None, "Vui lòng nhập đầy đủ username và mật khẩu!", False
+def signin_user(db: Session, username: str, password: str) -> tuple[Optional[int], Dict[str, str], bool]:
+    errors: Dict[str, str] = {}
+
+    if not username:
+        errors["username"] = "Vui lòng nhập tên người dùng!"
+    if not password:
+        errors["password"] = "Vui lòng nhập mật khẩu!"
+
+    if errors:
+        return None, errors, False
 
     from schemas import User
-    lower_username = username.lower()
-    user = db.query(User).filter(User.username == lower_username).first()
+    
+    user = db.query(User).filter(User.username == username.lower()).first()
+    if not user:
+        errors["username"] = "Tên người dùng không tồn tại!"
+        return None, errors, False
 
-    if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-        return user.id, "Đăng nhập thành công!", True
-    return None, "Sai username hoặc mật khẩu!", False
+    if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        errors["password"] = "Mật khẩu không đúng!"
+        return None, errors, False
+
+    return user.id, {}, True
 
 
 def get_information(db, user_id=None, info="username"):

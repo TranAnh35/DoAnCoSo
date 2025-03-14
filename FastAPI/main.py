@@ -46,17 +46,15 @@ class ProcessImageRequest(BaseModel):
 
 @app.post("/register")
 def register(user: UserRegister, db: Session = Depends(get_db)):
-    user_id, message, success = register_user(db, user.username, user.email, user.password)
-    if not success:
-        raise HTTPException(status_code=400, detail=message)
-    return {"user_id": user_id, "message": message}
+    user_id, errors, success = register_user(db, user.username, user.email, user.password)
+    return {"user_id": user_id if success else None, "errors": errors, "success": success}
 
 @app.post("/signin")
 def signin(user: UserSignin, db: Session = Depends(get_db)):
-    user_id, message, success = signin_user(db, user.username, user.password)
+    user_id, errors, success = signin_user(db, user.username, user.password)
     if not success:
-        raise HTTPException(status_code=401, detail=message)
-    return {"user_id": user_id, "message": message}
+        return {"errors": errors, "success": False}
+    return {"user_id": user_id, "errors": {}, "success": True}
 
 @app.get("/user/info")
 def user_info(user_id: int, info: str = "username", db: Session = Depends(get_db)):
