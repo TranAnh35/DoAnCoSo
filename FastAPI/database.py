@@ -2,11 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.exc import IntegrityError
+import numpy as np
 import bcrypt
-import re
 import uuid
 import cv2
-import numpy as np
+import re
 
 # URL kết nối PostgreSQL
 URL_DATABASE = 'postgresql://postgres:123456@localhost:3525/super_resolution'
@@ -71,15 +71,55 @@ def signin_user(db, username, password):
         return user.id, "Đăng nhập thành công!", True
     return None, "Sai username hoặc mật khẩu!", False
 
+
 def get_information(db, user_id=None, info="username"):
+    if user_id is None:
+        return None
+    
     from schemas import User
-    if user_id:
-        user = db.query(User).filter(User.id == user_id).first()
-        if user:
-            if info == "all":
-                return user.__dict__
-            return getattr(user, info, None)
-    return None
+
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        return None
+    
+    if info == "all":
+        return user.__dict__
+    
+    return getattr(user, info, None)
+
+def change_password(db, username: str, new_password: str):
+    if username is None or new_password is None:
+        raise ValueError("Cả user_id và session_id đều không hợp lệ!")
+
+    from schemas import User
+    user = db.query(User).filter(User.username == username).first()
+
+    if not user:
+        raise ValueError("User not found")
+
+    hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    user.password = hashed_password
+    db.commit()
+    
+def change_information(db, user_id, new_username, new_email):
+    if user_id is None:
+        raise ValueError("User ID không hợp lệ")
+    
+    from schemas import User
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        raise ValueError("User not found")
+    
+    if new_username:
+        user.username = new_username
+    
+    if new_email:
+        user.email = new_email
+    
+    db.commit()
 
 def create_guest_session(db):
     from schemas import GuestSession
@@ -88,7 +128,7 @@ def create_guest_session(db):
     db.add(new_session)
     db.commit()
     db.refresh(new_session)
-    return new_session.id, new_session.session_token, True
+    return new_session.id, new_session.session_token
 
 def drop_guest_session(db, session_id):
     from schemas import GuestSession

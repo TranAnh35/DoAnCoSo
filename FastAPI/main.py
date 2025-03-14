@@ -67,7 +67,7 @@ def user_info(user_id: int, info: str = "username", db: Session = Depends(get_db
 
 @app.post("/guest/create")
 def create_guest(db: Session = Depends(get_db)):
-    session_id, session_token, success = create_guest_session(db)
+    session_id, session_token = create_guest_session(db)
     return {"session_id": session_id, "session_token": session_token}
 
 @app.delete("/guest/drop")
@@ -117,7 +117,7 @@ async def process_image_endpoint(
     file: UploadFile = File(...),
     scale: int = 2
 ):
-    # Đọc file ảnh từ UploadFile
+
     contents = await file.read()
     nparr = np.frombuffer(contents, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -136,13 +136,23 @@ async def evaluate_quality_endpoint(
     sr_img = cv2.imdecode(np.frombuffer(sr_contents, np.uint8), cv2.IMREAD_COLOR)
     hr_img = cv2.imdecode(np.frombuffer(hr_contents, np.uint8), cv2.IMREAD_COLOR)
     
-    # Đảm bảo cùng kích thước
-    hr_img = cv2.resize(hr_img, (sr_img.shape[1], sr_img.shape[0]))
+    assert sr_img.shape == hr_img.shape
     
     psnr_value = calculate_psnr(sr_img, hr_img, crop_border=4, test_y_channel=True)
     ssim_value = calculate_ssim(sr_img, hr_img, crop_border=4, test_y_channel=True)
     
-    return {"psnr": psnr_value, "ssim": ssim_value}
+    import math
+    
+    if math.isinf(psnr_value):
+        psnr_value = 100.0
+    if math.isnan(psnr_value):
+        psnr_value = 0.0
+    if math.isinf(ssim_value):
+        ssim_value = 1.0
+    if math.isnan(ssim_value):
+        ssim_value = 0.0
+    
+    return {"psnr": round(float(psnr_value), 4), "ssim": round(float(ssim_value), 4)}
 
 if __name__ == "__main__":
     import uvicorn
