@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { signinUser } from "../services/api";
 import AuthLayout from "../components/AuthLayout";
 import SignInForm from "../components/SignInForm";
+import { useSnackbar } from "notistack";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
 
   const handleSignIn = async (data: { username: string; password: string }) => {
@@ -13,6 +15,7 @@ const SignIn: React.FC = () => {
       const response = await signinUser(data);
       if (response.success) {
         localStorage.setItem("user_id", response.user_id!.toString());
+        enqueueSnackbar("Đăng nhập thành công! Hãy tận hưởng.", { variant: "success", autoHideDuration: 1000 });
         navigate("/process");
       } else {
         setErrors(response.errors);

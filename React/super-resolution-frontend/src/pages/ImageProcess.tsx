@@ -1,5 +1,5 @@
 // src/pages/ImageProcess.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { processImage, getImageHistory, evaluateQuality, saveImageHistory } from '../services/api';
 import { ImageHistoryResponse, ProcessImageResponse, QualityEvaluationResponse, ImageHistoryRequest } from '../types/api';
 import { Button, Container, Typography, Box, Tabs, Tab, TextField, MenuItem, FormControl, Select, InputLabel } from '@mui/material';
@@ -75,55 +75,10 @@ const ImageProcess: React.FC = () => {
   };
 
   const [sliderPosition, setSliderPosition] = useState(50);
-  const [zoomLevel, setZoomLevel] = useState(1);
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number }>({
     width: 600,
     height: 400,
   });
-
-  const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [isCtrlPressed, setIsCtrlPressed] = useState(false);
-  const dragStart = useRef<{ x: number; y: number } | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null); 
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Control') setIsCtrlPressed(true);
-    };
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Control') setIsCtrlPressed(false);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    console.log('Container ref:', container); // Kiểm tra xem ref có giá trị không
-    if (!container) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setZoomLevel((prev) => {
-        const newZoom = Math.min(3, Math.max(1, prev + delta));
-        console.log('Zoom level updated to:', newZoom); // Log khi zoom thay đổi
-        return newZoom;
-      });
-    };
-
-    container.addEventListener('wheel', handleWheel, { passive: false });
-    console.log('Wheel event listener attached');
-    return () => {
-      container.removeEventListener('wheel', handleWheel);
-      console.log('Wheel event listener removed');
-    };
-  }, [lrResized, outputImage]);
 
   useEffect(() => {
     if (outputImage) {
@@ -137,50 +92,6 @@ const ImageProcess: React.FC = () => {
       };
     }
   }, [outputImage]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!isCtrlPressed) return; // Chỉ kéo khi giữ Ctrl
-    e.preventDefault(); // Ngăn hành vi kéo thả mặc định
-    setIsDragging(true);
-    dragStart.current = { x: e.clientX - position.x, y: e.clientY - position.y };
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !dragStart.current || !containerRef.current) return;
-
-    const newX = e.clientX - dragStart.current.x;
-    const newY = e.clientY - dragStart.current.y;
-
-    const zoomedWidth = imageDimensions.width * zoomLevel;
-    const zoomedHeight = imageDimensions.height * zoomLevel;
-    const maxX = zoomedWidth > 768 ? (zoomedWidth - 768) / 2 : 0;
-    const maxY = zoomedHeight > 768 ? (zoomedHeight - 768) / 2 : 0;
-
-    setPosition({
-      x: Math.max(-maxX, Math.min(maxX, newX)),
-      y: Math.max(-maxY, Math.min(maxY, newY)),
-    });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    dragStart.current = null;
-  };
-
-  const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
-    e.preventDefault(); // Ngăn hành vi kéo thả của thẻ <img>
-  };
-
-  const handleDownload = () => {
-    if (!outputImage) return;
-  
-    const link = document.createElement('a');
-    link.href = outputImage;
-    link.download = `super_resolution_${scale}x.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   // Tab Đánh giá chất lượng
   const handleSrImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
