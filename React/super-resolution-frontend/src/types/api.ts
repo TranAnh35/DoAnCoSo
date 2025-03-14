@@ -11,8 +11,13 @@ export interface UserSignin {
 }
 
 export interface AuthResponse {
-  user_id: number;
-  message: string;
+  user_id?: number;
+  errors: {
+    username?: string;
+    email?: string;
+    password?: string;
+  };
+  success: boolean;
 }
 
 export interface GuestSessionResponse {
