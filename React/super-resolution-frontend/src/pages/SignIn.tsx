@@ -15,7 +15,7 @@ const SignIn: React.FC = () => {
       const response = await signinUser(data);
       if (response.success) {
         localStorage.setItem("user_id", response.user_id!.toString());
-        enqueueSnackbar("Đăng nhập thành công! Hãy tận hưởng.", { variant: "success", autoHideDuration: 1000 });
+        enqueueSnackbar("Đăng nhập thành công! Hãy tận hưởng chương trình.", { variant: "success", autoHideDuration: 1000 });
         navigate("/process");
       } else {
         setErrors(response.errors);

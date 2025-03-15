@@ -15,14 +15,14 @@ const SignUp: React.FC = () => {
       const response = await registerUser(data);
       console.log(response);
       if (response.success) {
-        enqueueSnackbar("Đăng ký thành công! Hãy đăng nhập.", { variant: "success", autoHideDuration: 1000 }); // Hiển thị thông báo
+        enqueueSnackbar("Đăng ký thành công! Hãy đăng nhập nào.", { variant: "success", autoHideDuration: 1000 }); // Hiển thị thông báo
         navigate("/signin");
       } else {
         setErrors(response.errors);
       }
     } catch (error: any) {
       console.error("Error:", error);
-      setErrors({ username: "Đã xảy ra lỗi, vui lòng thử lại!" });
+      enqueueSnackbar("Đã xảy ra lỗi, vui lòng thử lại!", { variant: "error", autoHideDuration: 1000 });
     }
   };
 
