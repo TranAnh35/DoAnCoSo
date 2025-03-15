@@ -1,55 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { TextField, Button, Typography, Link } from "@mui/material";
 import "../styles/SignIn_SignUp.css";
 
+// Sử dụng interface đã định nghĩa trong useSignUpForm
 interface SignUpFormProps {
-  onSubmit: (data: {
-    username: string;
-    email: string;
-    password: string;
-  }) => Promise<void>;
-  backendErrors?: { username?: string; email?: string; password?: string }; // Lỗi từ backend
+  username: string;
+  setUsername: (value: string) => void;
+  email: string;
+  setEmail: (value: string) => void;
+  password: string;
+  setPassword: (value: string) => void;
+  usernameError: string;
+  setUsernameError: (value: string) => void;
+  emailError: string;
+  setEmailError: (value: string) => void;
+  passwordError: string;
+  setPasswordError: (value: string) => void;
+  handleSubmit: (e: React.FormEvent) => void;
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({
-  onSubmit,
-  backendErrors = {},
+  username,
+  setUsername,
+  email,
+  setEmail,
+  password,
+  setPassword,
+  usernameError,
+  setUsernameError,
+  emailError,
+  setEmailError,
+  passwordError,
+  setPasswordError,
+  handleSubmit,
 }) => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [usernameError, setUsernameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-
-  useEffect(() => {
-    if (backendErrors) {
-      setUsernameError(backendErrors.username || "");
-      setEmailError(backendErrors.email || "");
-      setPasswordError(backendErrors.password || "");
-    }
-  }, [backendErrors]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const localErrors = {
-      username: !username ? "Vui lòng nhập tên người dùng!" : "",
-      email: !email ? "Vui lòng nhập email!" : "",
-      password: !password ? "Vui lòng nhập mật khẩu!" : "",
-    };
-
-    setUsernameError(localErrors.username);
-    setEmailError(localErrors.email);
-    setPasswordError(localErrors.password);
-
-    if (localErrors.username || localErrors.email || localErrors.password) {
-      return;
-    }
-
-    await onSubmit({ username, email, password });
-  };
-
   return (
     <>
       <form onSubmit={handleSubmit} noValidate>
@@ -59,7 +43,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           value={username}
           onChange={(e) => {
             setUsername(e.target.value);
-            setUsernameError("");
+            if (usernameError) setUsernameError("");
           }}
           fullWidth
           margin="normal"
@@ -73,7 +57,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
-            setEmailError("");
+            if (emailError) setEmailError("");
           }}
           fullWidth
           margin="normal"
@@ -87,7 +71,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           value={password}
           onChange={(e) => {
             setPassword(e.target.value);
-            setPasswordError("");
+            if (passwordError) setPasswordError("");
           }}
           fullWidth
           margin="normal"

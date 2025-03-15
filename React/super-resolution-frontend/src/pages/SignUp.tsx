@@ -1,45 +1,35 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { registerUser } from "../services/api";
 import AuthLayout from "../components/AuthLayout";
 import SignUpForm from "../components/SignUpForm";
+import { useSignUpForm } from "../hooks/useSignUpForm";
+import { useAuth } from "../hooks/useAuth";
 import { useSnackbar } from "notistack";
 
 const SignUp: React.FC = () => {
-  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [errors, setErrors] = useState<{
-    username?: string;
-    email?: string;
-    password?: string;
-  }>({});
+  const [errors, setErrors] = useState<{ username?: string; email?: string; password?: string }>({});
 
-  const handleSignUp = async (data: {
-    username: string;
-    email: string;
-    password: string;
-  }) => {
-    try {
-      const response = await registerUser(data);
-      console.log(response);
-      if (response.success) {
-        enqueueSnackbar("Đăng ký thành công! Hãy đăng nhập.", {
-          variant: "success",
-          autoHideDuration: 1000,
-        }); // Hiển thị thông báo
-        navigate("/signin");
-      } else {
-        setErrors(response.errors);
+  const { handleSignUp } = useAuth(enqueueSnackbar);
+
+  const formProps = useSignUpForm(
+    async (data) => {
+      const result = await handleSignUp(data);
+      if (!result.success) {
+        setErrors(result.errors || {});
       }
-    } catch (error: any) {
-      console.error("Error:", error);
-      enqueueSnackbar("Đã xảy ra lỗi, vui lòng thử lại!", { variant: "error", autoHideDuration: 1000 });
-    }
-  };
+      return result;
+    },
+    errors
+  );
 
   return (
     <AuthLayout title="Đăng ký">
-      <SignUpForm onSubmit={handleSignUp} backendErrors={errors} />
+      <SignUpForm
+        {...formProps}
+        setUsernameError={formProps.setUsernameError}
+        setEmailError={formProps.setEmailError}
+        setPasswordError={formProps.setPasswordError}
+      />
     </AuthLayout>
   );
 };

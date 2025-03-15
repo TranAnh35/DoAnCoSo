@@ -1,48 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { TextField, Button, Typography, Link } from "@mui/material";
 import "../styles/SignIn_SignUp.css";
 
 interface SignInFormProps {
-  onSubmit: (data: { username: string; password: string }) => Promise<void>;
-  onGuestLogin: () => void;
-  backendErrors?: { username?: string; password?: string }; // Lỗi từ backend
+  username: string;
+  setUsername: (value: string) => void;
+  password: string;
+  setPassword: (value: string) => void;
+  usernameError: string;
+  setUsernameError: (value: string) => void; // Thêm prop để xóa lỗi
+  passwordError: string;
+  setPasswordError: (value: string) => void; // Thêm prop để xóa lỗi
+  handleSubmit: (e: React.FormEvent) => void;
+  handleGuestLogin: () => void;
 }
 
 const SignInForm: React.FC<SignInFormProps> = ({
-  onSubmit,
-  onGuestLogin,
-  backendErrors = {},
+  username,
+  setUsername,
+  password,
+  setPassword,
+  usernameError,
+  setUsernameError,
+  passwordError,
+  setPasswordError,
+  handleSubmit,
+  handleGuestLogin,
 }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [usernameError, setUsernameError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-
-  useEffect(() => {
-    if (backendErrors) {
-      setUsernameError(backendErrors.username || "");
-      setPasswordError(backendErrors.password || "");
-    }
-  }, [backendErrors]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const localErrors = {
-      username: !username ? "Vui lòng nhập tên người dùng!" : "",
-      password: !password ? "Vui lòng nhập mật khẩu!" : "",
-    };
-
-    setUsernameError(localErrors.username || backendErrors.username || "");
-    setPasswordError(localErrors.password || backendErrors.password || "");
-
-    if (localErrors.username || localErrors.password) {
-      return;
-    }
-
-    await onSubmit({ username, password });
-  };
-
   return (
     <>
       <form onSubmit={handleSubmit} noValidate>
@@ -52,7 +36,7 @@ const SignInForm: React.FC<SignInFormProps> = ({
           value={username}
           onChange={(e) => {
             setUsername(e.target.value);
-            setUsernameError("");
+            if (usernameError) setUsernameError(""); // Xóa lỗi khi nhập
           }}
           fullWidth
           margin="normal"
@@ -66,7 +50,7 @@ const SignInForm: React.FC<SignInFormProps> = ({
           value={password}
           onChange={(e) => {
             setPassword(e.target.value);
-            setPasswordError("");
+            if (passwordError) setPasswordError(""); // Xóa lỗi khi nhập
           }}
           fullWidth
           margin="normal"
@@ -81,7 +65,7 @@ const SignInForm: React.FC<SignInFormProps> = ({
           variant="outlined"
           className="login-button"
           style={{ marginTop: "10px" }}
-          onClick={onGuestLogin}
+          onClick={handleGuestLogin}
         >
           Đăng nhập Guest
         </Button>

@@ -4,7 +4,7 @@ import "../styles/SignIn_SignUp.css"; // Đường dẫn đúng nếu đã di ch
 
 interface AuthLayoutProps {
   title: string;
-  children: React.ReactNode; // Nội dung form sẽ được truyền vào
+  children: React.ReactNode;
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ title, children }) => {
