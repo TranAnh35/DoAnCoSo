@@ -8,14 +8,20 @@ import { useSnackbar } from "notistack";
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+  }>({});
 
   const handleSignIn = async (data: { username: string; password: string }) => {
     try {
       const response = await signinUser(data);
       if (response.success) {
         localStorage.setItem("user_id", response.user_id!.toString());
-        enqueueSnackbar("Đăng nhập thành công! Hãy tận hưởng.", { variant: "success", autoHideDuration: 1000 });
+        enqueueSnackbar("Đăng nhập thành công! Hãy tận hưởng.", {
+          variant: "success",
+          autoHideDuration: 1000,
+        });
         navigate("/process");
       } else {
         setErrors(response.errors);
@@ -33,7 +39,11 @@ const SignIn: React.FC = () => {
 
   return (
     <AuthLayout title="Đăng nhập">
-      <SignInForm onSubmit={handleSignIn} onGuestLogin={handleGuestLogin} backendErrors={errors} />
+      <SignInForm
+        onSubmit={handleSignIn}
+        onGuestLogin={handleGuestLogin}
+        backendErrors={errors}
+      />
     </AuthLayout>
   );
 };

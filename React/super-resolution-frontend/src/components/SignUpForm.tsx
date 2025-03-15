@@ -3,11 +3,18 @@ import { TextField, Button, Typography, Link } from "@mui/material";
 import "../styles/SignIn_SignUp.css";
 
 interface SignUpFormProps {
-  onSubmit: (data: { username: string; email: string; password: string }) => Promise<void>;
+  onSubmit: (data: {
+    username: string;
+    email: string;
+    password: string;
+  }) => Promise<void>;
   backendErrors?: { username?: string; email?: string; password?: string }; // Lỗi từ backend
 }
 
-const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, backendErrors = {} }) => {
+const SignUpForm: React.FC<SignUpFormProps> = ({
+  onSubmit,
+  backendErrors = {},
+}) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
