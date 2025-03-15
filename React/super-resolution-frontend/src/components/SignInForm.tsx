@@ -8,7 +8,11 @@ interface SignInFormProps {
   backendErrors?: { username?: string; password?: string }; // Lỗi từ backend
 }
 
-const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, onGuestLogin, backendErrors = {} }) => {
+const SignInForm: React.FC<SignInFormProps> = ({
+  onSubmit,
+  onGuestLogin,
+  backendErrors = {},
+}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
