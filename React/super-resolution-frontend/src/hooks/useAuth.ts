@@ -11,7 +11,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
       if (response.success) {
         enqueueSnackbar("Đăng ký thành công! Hãy đăng nhập.", {
           variant: "success",
-          autoHideDuration: 1000,
+          autoHideDuration: 1500,
         });
         navigate("/signin");
         return { success: true };
@@ -22,9 +22,8 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
       console.error("Error:", error);
       enqueueSnackbar("Đã xảy ra lỗi, vui lòng thử lại!", {
         variant: "error",
-        autoHideDuration: 1000,
+        autoHideDuration: 2000,
       });
-      // Thay vì trả về { general: string }, trả về lỗi phù hợp với form
       return { success: false, errors: { username: "Đã xảy ra lỗi, vui lòng thử lại!" } };
     }
   };
@@ -36,7 +35,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
         localStorage.setItem("user_id", response.user_id!.toString());
         enqueueSnackbar("Đăng nhập thành công! Hãy tận hưởng chương trình.", {
           variant: "success",
-          autoHideDuration: 1000,
+          autoHideDuration: 1500,
         });
         navigate("/process");
         return { success: true };
@@ -47,7 +46,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
       console.error("Error:", error);
       enqueueSnackbar("Đã xảy ra lỗi, vui lòng thử lại!", {
         variant: "error",
-        autoHideDuration: 1000,
+        autoHideDuration: 2000,
       });
       return { success: false, errors: { username: "Đã xảy ra lỗi, vui lòng thử lại!" } };
     }
@@ -59,7 +58,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
       localStorage.setItem("guest", response.session_id!.toString());
       enqueueSnackbar("Đăng nhập thành công với vai trò khách!", {
         variant: "success",
-        autoHideDuration: 1000,
+        autoHideDuration: 1500,
       });
       navigate("/process");
       return { success: true };
@@ -67,7 +66,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
       console.error("Error:", error);
       enqueueSnackbar("Đã xảy ra lỗi, vui lòng thử lại!", {
         variant: "error",
-        autoHideDuration: 1000,
+        autoHideDuration: 2000,
       });
       return { success: false };
     }
@@ -88,7 +87,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
     
     enqueueSnackbar("Đăng xuất thành công!", {
       variant: "success",
-      autoHideDuration: 1000,
+      autoHideDuration: 1500,
     });
 
     navigate("/signin");
