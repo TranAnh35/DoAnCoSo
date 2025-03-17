@@ -12,10 +12,13 @@ const History: React.FC = () => {
   const userId = localStorage.getItem("user_id")
     ? parseInt(localStorage.getItem("user_id")!)
     : undefined;
+  const sessionId = localStorage.getItem("guest")
+    ? parseInt(localStorage.getItem("guest")!)
+    : undefined;
 
   // Sử dụng hook useImageHistory
   const { history, selectedHistory, setSelectedHistory, handleRefreshHistory } =
-    useImageHistory(userId);
+    useImageHistory(userId, sessionId);
 
   const handleTabChange = (newTab: number) => {
     setTab(newTab);

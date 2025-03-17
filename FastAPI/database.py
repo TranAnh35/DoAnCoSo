@@ -153,15 +153,23 @@ def get_information(db, user_id=None, info="username"):
     
     return getattr(user, info, None)
 
-def change_password(db, username: str, new_password: str):
-    if username is None or new_password is None:
-        raise ValueError("Cả user_id và session_id đều không hợp lệ!")
+def change_password(db, user_id, old_password, new_password, confirm_password):
+    error = {}
+    
+    if user_id is None:
+        error['user_id'] = "UserID không hợp lệ"
+    if old_password is None:
+        error['old_password'] = "Mật khẩu cũ không hợp lệ"
+    if new_password is None:
+        error['new_password'] = "Mật khẩu mới không hợp lệ"
+    if confirm_password is None:
+        error['confirm_password'] = "Xác nhận mật khẩu không hợp lệ"
 
     from schemas import User
-    user = db.query(User).filter(User.username == username).first()
+    user = db.query(User).filter(User.user_id == user_id).first()
 
     if not user:
-        raise ValueError("User not found")
+        raise ValueError("User không tồn tại")
 
     hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 

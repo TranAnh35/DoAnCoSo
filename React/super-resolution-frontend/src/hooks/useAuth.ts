@@ -7,7 +7,6 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
   const handleSignUp = async (data: { username: string; email: string; password: string }) => {
     try {
       const response = await registerUser(data);
-      console.log(response);
       if (response.success) {
         enqueueSnackbar("Đăng ký thành công! Hãy đăng nhập.", {
           variant: "success",
@@ -31,8 +30,8 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
   const handleSignIn = async (data: { username: string; password: string }) => {
     try {
       const response = await signinUser(data);
-      if (response.success) {
-        localStorage.setItem("user_id", response.user_id!.toString());
+      if (response.success && response.user_id) {
+        localStorage.setItem("user_id", response.user_id.toString());
         enqueueSnackbar("Đăng nhập thành công! Hãy tận hưởng chương trình.", {
           variant: "success",
           autoHideDuration: 1500,
@@ -55,7 +54,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
   const handleGuestLogin = async () => {
     try {
       const response = await createGuestSession();
-      localStorage.setItem("guest", response.session_id!.toString());
+      localStorage.setItem("guest", response.session_id.toString());
       enqueueSnackbar("Đăng nhập thành công với vai trò khách!", {
         variant: "success",
         autoHideDuration: 1500,

@@ -14,8 +14,8 @@ const ImageProcess: React.FC = () => {
   const userId = localStorage.getItem("user_id")
     ? parseInt(localStorage.getItem("user_id")!)
     : undefined;
-  const sessionId = localStorage.getItem("session_id")
-    ? parseInt(localStorage.getItem("session_id")!)
+  const sessionId = localStorage.getItem("guest")
+    ? parseInt(localStorage.getItem("guest")!)
     : undefined;
 
   // Sử dụng hook useImageProcess
