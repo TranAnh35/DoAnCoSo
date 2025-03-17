@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Container, Button, Typography } from "@mui/material";
 import EnhancementInterface from "./EnhancementInterface";
 import ImageUploader from "./ImageUploader";
@@ -6,12 +6,11 @@ import { useImageZoom } from "../hooks/useImageZoom"; // Giữ lại useImageZoo
 import "../styles/ImageProcess.css";
 
 interface ImageProcessFormProps {
-  userId?: number;
   inputPreview: string | null;
   outputImage: string | null;
   lrResized: string | null;
-  scale: number;
-  setScale: React.Dispatch<React.SetStateAction<number>>;
+  scale: 2 | 3 | 4;
+  setScale: React.Dispatch<React.SetStateAction<2 | 3 | 4>>;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => void;
   handleClear: () => void;
@@ -30,6 +29,28 @@ const ImageProcessForm: React.FC<ImageProcessFormProps> = ({
   const { zoomLevel, position, containerRef, handleMouseDown, handleMouseMove, handleMouseUp } =
     useImageZoom(outputImage);
 
+    const [imageInfo, setImageInfo] = useState<{
+      name: string;
+      originalSize: string;
+      targetSize: string;
+    }>({
+      name: "",
+      originalSize: "",
+      targetSize: "",
+    });
+  
+    useEffect(() => {
+      if (inputPreview) {
+        const img = new Image();
+        img.src = inputPreview;
+        img.onload = () => {
+          const originalWidth = img.width;
+          const originalHeight = img.height;
+          setImageInfo({ name: "Ảnh gốc", originalSize: `${originalWidth}x${originalHeight}`, targetSize: `${originalWidth * scale}x${originalHeight * scale}` });
+        };
+      }
+    }, [inputPreview, scale]);
+
   const handleDownload = () => {
     if (!outputImage) return;
     const link = document.createElement("a");
@@ -44,17 +65,16 @@ const ImageProcessForm: React.FC<ImageProcessFormProps> = ({
     <Box>
       {!inputPreview ? (
         <ImageUploader
-          label="Ảnh đầu vào"
-          id="fileInput"
           onImageChange={(file, preview) => handleFileChange({ target: { files: [file] } } as any)}
           onReset={handleClear}
-          preview={null}
+          preview={inputPreview}
         />
       ) : (
         <EnhancementInterface
           inputPreview={inputPreview}
           scale={scale}
           setScale={setScale}
+          imageInfo={imageInfo}
           handleSubmit={handleSubmit}
           handleClear={handleClear}
         />

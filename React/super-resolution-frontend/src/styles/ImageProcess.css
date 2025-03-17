@@ -4,413 +4,417 @@
   }
   
   /* Header styles */
-  .header-appbar {
-    width: 100vw;
-  }
-  .header-toolbar {
-    width: 100%;
-    padding: 0 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+.header-appbar {
+  width: 100vw;
+}
+.header-toolbar {
+  width: 100%;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
   
-  /* Container bên trái của header */
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .logo-img {
-    height: 40px;
-  }
-  .header-title {
-    font-weight: bold;
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 0;
-  }
-  .header-tabs {
-    margin-left: 16px;
-  }
+/* Container bên trái của header */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.logo-img {
+  height: 40px;
+}
+.header-title {
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0;
+}
+.header-tabs {
+  margin-left: 16px;
+}
   
   /* Container bên phải của header */
-  .header-right {
-    display: flex;
-    align-items: center;
-    margin-right: 30px;
-  }
-  .header-menu-btn {
-    margin-right: 0;
-  }
+.header-right {
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+}
+.header-menu-btn {
+  margin-right: 0;
+}
   
   /* Các style chung khác */
-  .custom-tabs {
-    display: flex;
-    justify-content: center;
-  }
-  .custom-tabs .MuiTab-root {
-    font-size: 1rem;
-    font-weight: bold;
-    text-transform: none;
-    color: #555;
-  }
-  .custom-tabs .Mui-selected {
-    color: #1976d2;
-    font-weight: bold;
-  }
-  .custom-tabs .MuiTabs-indicator {
-    background-color: #1976d2;
-  }
+.custom-tabs {
+  display: flex;
+  justify-content: center;
+}
+.custom-tabs .MuiTab-root {
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: none;
+  color: #555;
+}
+.custom-tabs .Mui-selected {
+  color: #4d90fe;
+  font-weight: bold;
+}
+.custom-tabs .MuiTabs-indicator {
+  background-color: #4d90fe;
+}
   
-  .header {
-    margin-bottom: 16px;
-  }
+.header {
+  margin-bottom: 16px;
+}
   
-  .uploading-bar {
-    width: 100%;
-    height: 4px;
-    background-color: #e0e0e0;
-    border-radius: 2px;
-    margin-bottom: 16px;
-  }
+.uploading-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
   
-  .uploading-bar-progress {
-    width: 0%;
-    height: 100%;
-    background-color: #1976d2;
-    border-radius: 2px;
-    transition: width 0.3s;
-  }
+.uploading-bar-progress {
+  width: 0%;
+  height: 100%;
+  background-color: #4d90fe;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
   
-  .sidetools {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-bottom: 16px;
-  }
+.sidetools {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
   
-  .sidetool-button {
-    min-width: 40px;
-    padding: 8px;
-    background-color: #fff;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  .sidetool-button:hover {
-    background-color: #f0f0f0;
-  }
+.sidetool-button {
+  min-width: 40px;
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.sidetool-button:hover {
+  background-color: #f0f0f0;
+}
   
-  .editor {
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 120px);
-  }
+.editor {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 120px);
+}
   
-  .editor-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: #f0f0f0;
-  }
+.editor-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
   
-  .editor-image-container {
-    position: relative;
-    width: 600px;
-    height: 400px;
-    margin: 0 auto;
-  }
-  .editor-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-  .editor-slider {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 50px;
-    height: 100%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: ew-resize;
-  }
-  .editor-range {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: ew-resize;
-  }
+.editor-image-container {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  margin: 0 auto;
+}
+.editor-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.editor-slider {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50px;
+  height: 100%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ew-resize;
+}
+.editor-range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: ew-resize;
+}
   
-  .logopnk {
-    width: 50px;
-    height: 30px;
-    margin-right: 10px;
-  }
+.logopnk {
+  width: 50px;
+  height: 30px;
+  margin-right: 10px;
+}
   
   /* UploadComponent */
-  .upload-container {
-    margin-top: 64px;
-    text-align: center;
-  }
-  .upload-button {
-    border-radius: 20px;
-    padding: 8px 16px;
-  }
+.upload-container {
+  margin-top: 64px;
+  text-align: center;
+}
+
+.upload-button {
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 1.2rem !important;
+  min-width: 330px !important;
+  min-height: 80px;
+}
   
   /* EnhancementInterface */
-  .enhancement-container {
-    display: flex;
-    margin-top: 80px;
-    padding: 20px;
-  }
-  .preview-container {
-    flex: 1;
-    position: relative;
-    text-align: center;
-  }
-  .preview-image {
-    border: 1px solid #ccc;
-    display: block;
-    margin: 0 auto;
-  }
-  .dimension-label-left {
-    position: absolute;
-    left: 20px;
-    top: 10px;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 4px;
-    border-radius: 4px;
-  }
-  .dimension-label-right {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 4px;
-    border-radius: 4px;
-  }
-  .options-container {
-    width: 300px;
-    margin-left: 40px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    height: fit-content;
-  }
-  .form-control {
-    margin-bottom: 16px;
-  }
-  .options-buttons {
-    display: flex;
-    justify-content: space-between;
-  }
-  /* QualityEvaluation */
-  .quality-upload-container {
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    width: auto;
-    min-width: 1250px;
-    min-height: 250px;
-  }
-  .quality-upload-item {
-    text-align: center;
-    flex: 1;
-  }
-  .quality-upload-item:first-child {
-    margin-right: 16px;
-  }
-  .quality-upload-item:last-child {
-    margin-left: 16px;
-  }
-  .quality-image {
-    margin-top: 10px;
-    max-width: 100%;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-  }
-  .reset-button {
-    border-radius: 20px;
-    margin-top: 10px;
-  }
+.enhancement-container {
+  display: flex;
+  margin-top: 80px;
+  padding: 20px;
+}
+.preview-container {
+  flex: 1;
+  position: relative;
+  text-align: center;
+}
+.preview-image {
+  border: 1px solid #ccc;
+  display: block;
+  margin: 0 auto;
+}
+.dimension-label-left {
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 4px;
+  border-radius: 4px;
+}
+.dimension-label-right {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 4px;
+  border-radius: 4px;
+}
+.options-container {
+  width: 300px;
+  margin-left: 40px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  height: fit-content;
+}
+.form-control {
+  margin-bottom: 16px;
+}
+.options-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+/* QualityEvaluation */
+.quality-upload-container {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  width: auto;
+  min-width: 1250px;
+  min-height: 250px;
+}
+.quality-upload-item {
+  text-align: center;
+  flex: 1;
+}
+.quality-upload-item:first-child {
+  margin-right: 16px;
+}
+.quality-upload-item:last-child {
+  margin-left: 16px;
+}
+.quality-image {
+  margin-top: 10px;
+  max-width: 100%;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+.reset-button {
+  border-radius: 20px;
+  margin-top: 10px;
+}
   
   /* Metrics */
-  .metrics-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  .metric-box {
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 8px;
-    width: 120px;
-    text-align: center;
-  }
-  .calculate-container {
-    text-align: center;
-  }
-  .calculate-button {
-    border-radius: 20px;
-  }
+.metrics-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.metric-box {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 8px;
+  width: 120px;
+  text-align: center;
+}
+.calculate-container {
+  text-align: center;
+}
+.calculate-button {
+  border-radius: 20px;
+}
   
   /* Output container (Tab 0) */
-  .output-container {
-    margin-top: 20px;
-    text-align: center;
-  }
-  .output-image {
-    width: auto;
-    display: block;
-    margin: 0 auto;
-    border: 1px solid #ccc;
-  }
+.output-container {
+  margin-top: 20px;
+  text-align: center;
+}
+.output-image {
+  width: auto;
+  display: block;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+}
   
   /* Tab containers */
-  .tab1-container {
-    margin-top: 64px;
-  }
-  .tab2-container {
-    margin-top: 100px;             
-    display: flex;
-    flex-direction: column;
-    align-items: center;       
-  }
+.tab1-container {
+  margin-top: 64px;
+}
+.tab2-container {
+  margin-top: 100px;             
+  display: flex;
+  flex-direction: column;
+  align-items: center;       
+}
   
   /* Thanh chứa Select và nút Refresh */
-  .history-bar {
-    width: 400px;                  
-    max-width: 90%;              
-    display: flex;
-    flex-direction: column;      
-    gap: 10px;                     
-    margin-top: 20px;             
-  }
+.history-bar {
+  width: 400px;                  
+  max-width: 90%;              
+  display: flex;
+  flex-direction: column;      
+  gap: 10px;                     
+  margin-top: 20px;             
+}
   
   /* Chiều rộng tối đa cho Select */
-  .history-select {
-    width: 100%;                 
-  }
+.history-select {
+  width: 100%;                 
+}
   
   /* Nút refresh */
-  .history-refresh-button {
-    width: 100%;                  
-    background-color: #1976d2;   
-    color: #fff;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-  }
+.history-refresh-button {
+  width: 100%;                  
+  background-color: #4d90fe;   
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
   
   /* Hover cho nút refresh */
-  .history-refresh-button:hover {
-    background-color: #1565c0;
-  }
+.history-refresh-button:hover {
+  background-color: rgb(16, 109, 215);
+}
   
   /* Khung chứa ảnh lịch sử */
-  .history-images {
-    display: flex;
-    gap: 16px;
-    margin-top: 16px;
-    justify-content: center;
-  }
-  @media (max-width: 768px) {
+.history-images {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  justify-content: center;
+}
+@media (max-width: 768px) {
     /* Điều chỉnh container chính */
-    .container {
-      padding: 0 10px;
-    }
+  .container {
+    padding: 0 10px;
+  }
     
     /* Header: Giảm padding và điều chỉnh bố cục */
-    .header-appbar {
-      padding: 0 10px;
-    }
-    .header-toolbar {
-      padding: 0 10px;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .header-left {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .header-right {
-      margin-right: 10px;
-    }
+  .header-appbar {
+    padding: 0 10px;
+  }
+  .header-toolbar {
+    padding: 0 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .header-right {
+    margin-right: 10px;
+  }
     
     /* Hiển thị lại header-tabs dưới dạng thanh cuộn ngang */
-    .header-tabs {
-      display: flex; /* hiển thị flex */
-      overflow-x: auto;
-      white-space: nowrap;
-      width: 100%;
-      margin-top: 8px;
-    }
-    .header-tabs .MuiTab-root {
-      font-size: 0.8rem; /* Giảm kích thước chữ cho phù hợp */
-      min-width: 80px;  /* Đặt chiều rộng tối thiểu cho từng tab */
-    }
+  .header-tabs {
+    display: flex; /* hiển thị flex */
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .header-tabs .MuiTab-root {
+    font-size: 0.8rem; /* Giảm kích thước chữ cho phù hợp */
+    min-width: 80px;  /* Đặt chiều rộng tối thiểu cho từng tab */
+  }
     
     /* Các điều chỉnh khác */
-    .upload-container {
-      margin-top: 64px;
-      padding: 0 10px;
-      text-align: center;
-    }
-    
-    .enhancement-container {
-      flex-direction: column;
-      padding: 10px;
-    }
-    .preview-container {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    .options-container {
-      width: 100%;
-      margin-left: 0;
-    }
-    
-    .quality-upload-container {
-      flex-direction: column;
-      min-width: auto;
-      padding: 10px;
-    }
-    .quality-upload-item {
-      margin: 0 0 16px 0;
-    }
-    
-    .output-container {
-      padding: 0 10px;
-    }
-    .output-image {
-      max-width: 100%;
-      height: auto;
-    }
-    
-    .history-bar {
-      width: 100%;
-      max-width: 100%;
-      margin-top: 20px;
-    }
-    .history-select {
-      width: 100%;
-    }
+  .upload-container {
+    margin-top: 64px;
+    padding: 0 10px;
+    text-align: center;
   }
+    
+  .enhancement-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  .preview-container {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .options-container {
+    width: 100%;
+    margin-left: 0;
+  }
+    
+  .quality-upload-container {
+    flex-direction: column;
+    min-width: auto;
+    padding: 10px;
+  }
+  .quality-upload-item {
+    margin: 0 0 16px 0;
+  }
+    
+  .output-container {
+    padding: 0 10px;
+  }
+  .output-image {
+    max-width: 100%;
+    height: auto;
+  }
+    
+  .history-bar {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 20px;
+  }
+  .history-select {
+    width: 100%;
+  }
+}

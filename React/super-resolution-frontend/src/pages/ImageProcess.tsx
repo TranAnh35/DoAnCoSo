@@ -41,7 +41,6 @@ const ImageProcess: React.FC = () => {
       <Header tab={tab} setTab={handleTabChange} />
       <Toolbar />
       <ImageProcessForm
-        userId={userId}
         inputPreview={inputPreview}
         outputImage={outputImage}
         lrResized={lrResized}

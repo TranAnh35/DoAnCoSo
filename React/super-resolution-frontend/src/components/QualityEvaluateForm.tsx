@@ -33,15 +33,11 @@ const QualityEvaluateForm: React.FC<QualityEvaluateFormProps> = ({
       </Typography>
       <Box className="quality-upload-container">
         <ImageUploader
-          label="Ảnh SR"
-          id="srImage"
           onImageChange={handleSrImageChange}
           onReset={handleResetSrImage}
           preview={srPreview}
         />
         <ImageUploader
-          label="Ảnh HR"
-          id="hrImage"
           onImageChange={handleHrImageChange}
           onReset={handleResetHrImage}
           preview={hrPreview}

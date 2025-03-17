@@ -7,7 +7,7 @@ export const useImageProcess = (enqueueSnackbar: (message: string, options: any)
   const [inputPreview, setInputPreview] = useState<string | null>(null);
   const [outputImage, setOutputImage] = useState<string | null>(null);
   const [lrResized, setLrResized] = useState<string | null>(null);
-  const [scale, setScale] = useState(2);
+  const [scale, setScale] = useState<2 | 3 | 4>(2);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
