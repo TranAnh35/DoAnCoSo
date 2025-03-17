@@ -16,6 +16,7 @@ export interface AuthResponse {
     username?: string;
     email?: string;
     password?: string;
+    global?: string;
   };
   success: boolean;
 }
@@ -52,4 +53,5 @@ export interface ProcessImageResponse {
 export interface QualityEvaluationResponse {
   psnr: number;
   ssim: number;
+  error?: string;
 }

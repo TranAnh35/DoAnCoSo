@@ -2,7 +2,7 @@ import { useState } from "react";
 import { evaluateQuality } from "../services/api";
 import { QualityEvaluationResponse } from "../types/api";
 
-export const useQualityEvaluation = () => {
+export const useQualityEvaluation = (enqueueSnackbar: (message: string, options: any) => void) => {
   const [srImage, setSrImage] = useState<File | null>(null);
   const [hrImage, setHrImage] = useState<File | null>(null);
   const [srPreview, setSrPreview] = useState<string | null>(null);
@@ -22,16 +22,29 @@ export const useQualityEvaluation = () => {
 
   const handleEvaluate = async () => {
     if (!srImage || !hrImage) {
-      alert("Vui lòng chọn cả ảnh SR và ảnh HR để đánh giá!");
+      enqueueSnackbar("Vui lòng chọn cả ảnh SR và ảnh HR để đánh giá!", {
+        variant: "warning",
+        autoHideDuration: 2000,
+      });
       return;
     }
     try {
       const response: QualityEvaluationResponse = await evaluateQuality(srImage, hrImage);
+      if (response.error) {
+        enqueueSnackbar(response.error, {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return;
+      }
       setPsnr(response.psnr);
       setSsim(response.ssim);
     } catch (error) {
       console.error("Lỗi khi đánh giá:", error);
-      alert("Có lỗi xảy ra khi đánh giá chất lượng ảnh!");
+      enqueueSnackbar("Có lỗi xảy ra khi đánh giá chất lượng ảnh!", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
     }
   };
 

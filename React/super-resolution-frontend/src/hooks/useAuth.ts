@@ -24,7 +24,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
         variant: "error",
         autoHideDuration: 2000,
       });
-      return { success: false, errors: { username: "Đã xảy ra lỗi, vui lòng thử lại!" } };
+      return { success: false, errors: { global: "Đã xảy ra lỗi, vui lòng thử lại!" } };
     }
   };
 
@@ -48,7 +48,7 @@ export const useAuth = (enqueueSnackbar: (message: string, options: any) => void
         variant: "error",
         autoHideDuration: 2000,
       });
-      return { success: false, errors: { username: "Đã xảy ra lỗi, vui lòng thử lại!" } };
+      return { success: false, errors: { global: "Đã xảy ra lỗi, vui lòng thử lại!" } };
     }
   };
 

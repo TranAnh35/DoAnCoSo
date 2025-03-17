@@ -2,7 +2,7 @@ import { useState } from "react";
 import { processImage, saveImageHistory } from "../services/api";
 import { ProcessImageResponse, ImageHistoryRequest } from "../types/api";
 
-export const useImageProcess = (userId?: number) => {
+export const useImageProcess = (enqueueSnackbar: (message: string, options: any) => void, userId?: number, sessionId?: number) => {
   const [inputImage, setInputImage] = useState<File | null>(null);
   const [inputPreview, setInputPreview] = useState<string | null>(null);
   const [outputImage, setOutputImage] = useState<string | null>(null);
@@ -21,7 +21,10 @@ export const useImageProcess = (userId?: number) => {
 
   const handleSubmit = async () => {
     if (!inputImage) {
-      alert("Vui lòng chọn một ảnh để xử lý!");
+      enqueueSnackbar("Vui lòng chọn một ảnh để xử lý!", {
+        variant: "warning",
+        autoHideDuration: 2000,
+      });
       return;
     }
     try {
@@ -38,9 +41,22 @@ export const useImageProcess = (userId?: number) => {
         };
         await saveImageHistory(historyRequest);
       }
+
+      if (sessionId && inputPreview) {
+        const historyRequest: ImageHistoryRequest = {
+          session_id: sessionId,
+          input_image: inputPreview.split(",")[1],
+          output_image: response.output,
+          scale,
+        };
+        await saveImageHistory(historyRequest);
+      }
     } catch (error: any) {
       console.error("Lỗi khi xử lý ảnh:", error);
-      alert(error.response?.data?.detail || "Có lỗi xảy ra khi xử lý ảnh!");
+      enqueueSnackbar(error.response?.data?.detail || "Có lỗi xảy ra khi xử lý ảnh!", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
     }
   };
 

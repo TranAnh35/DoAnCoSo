@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Toolbar } from "@mui/material";
 import Header from "../components/Header";
+import { useSnackbar } from "notistack";
 import ImageProcessForm from "../components/ImageProcessForm";
 import { useImageProcess } from "../hooks/useImageProcess"; // Import hook
 import "../styles/ImageProcess.css";
@@ -9,8 +10,12 @@ import "../styles/ImageProcess.css";
 const ImageProcess: React.FC = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
   const userId = localStorage.getItem("user_id")
     ? parseInt(localStorage.getItem("user_id")!)
+    : undefined;
+  const sessionId = localStorage.getItem("session_id")
+    ? parseInt(localStorage.getItem("session_id")!)
     : undefined;
 
   // Sử dụng hook useImageProcess
@@ -23,7 +28,7 @@ const ImageProcess: React.FC = () => {
     handleFileChange,
     handleSubmit,
     handleClear,
-  } = useImageProcess(userId);
+  } = useImageProcess(enqueueSnackbar, userId, sessionId);
 
   const handleTabChange = (newTab: number) => {
     setTab(newTab);

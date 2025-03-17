@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Toolbar } from "@mui/material";
+import { useSnackbar } from "notistack";
 import Header from "../components/Header";
 import QualityEvaluateForm from "../components/QualityEvaluateForm";
 import { useQualityEvaluation } from "../hooks/useQualityEvaluation"; // Import hook
@@ -9,6 +10,7 @@ import "../styles/ImageProcess.css";
 const QualityEvaluate: React.FC = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState(1);
+  const { enqueueSnackbar } = useSnackbar();
 
   // Sử dụng hook useQualityEvaluation
   const {
@@ -21,7 +23,7 @@ const QualityEvaluate: React.FC = () => {
     handleEvaluate,
     handleResetSrImage,
     handleResetHrImage,
-  } = useQualityEvaluation();
+  } = useQualityEvaluation(enqueueSnackbar);
 
   const handleTabChange = (newTab: number) => {
     setTab(newTab);

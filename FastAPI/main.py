@@ -134,8 +134,9 @@ async def evaluate_quality_endpoint(
     sr_img = cv2.imdecode(np.frombuffer(sr_contents, np.uint8), cv2.IMREAD_COLOR)
     hr_img = cv2.imdecode(np.frombuffer(hr_contents, np.uint8), cv2.IMREAD_COLOR)
     
-    assert sr_img.shape == hr_img.shape
-    
+    if (sr_img.shape != hr_img.shape):
+        return {"psnr": None, "ssim": None, "error": "Kích thước hình ảnh không khớp"}
+
     psnr_value = calculate_psnr(sr_img, hr_img, crop_border=4, test_y_channel=True)
     ssim_value = calculate_ssim(sr_img, hr_img, crop_border=4, test_y_channel=True)
     

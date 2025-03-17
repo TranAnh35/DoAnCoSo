@@ -22,7 +22,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ title, children }) => {
             <Typography variant="h4" className="login-title">
               {title}
             </Typography>
-            {children} {/* Form sẽ được render ở đây */}
+            {children} {}
           </div>
         </Grid>
       </Grid>
