@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from database import get_db, register_user, signin_user, get_information, create_guest_session, drop_guest_session, save_image_history, remove_image_history, get_image_history
 from models import process_image 
@@ -113,9 +113,8 @@ def get_history(user_id: Optional[int] = None, session_id: Optional[int] = None,
 @app.post("/process-image")
 async def process_image_endpoint(
     file: UploadFile = File(...),
-    scale: int = 2
+    scale: int = Form(2)
 ):
-
     contents = await file.read()
     nparr = np.frombuffer(contents, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
