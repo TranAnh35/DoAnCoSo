@@ -1,15 +1,16 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import { Box, Toolbar } from "@mui/material";
-import Header from "../components/Header";
+import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import ImageProcessForm from "../components/ImageProcessForm";
-import { useImageProcess } from "../hooks/useImageProcess"; // Import hook
-import "../styles/ImageProcess.css";
+import Header from "../components/Header";
+import ImageUploader from "../components/ImageUploader";
+import EnhancementInterface from "../components/EnhancementInterface";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { useImageProcessLogic } from "../hooks/useImageProcessLogic";
+import { useHeader } from "../hooks/useHeader";
 
 const ImageProcess: React.FC = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState(0);
   const { enqueueSnackbar } = useSnackbar();
   const userId = localStorage.getItem("user_id")
     ? parseInt(localStorage.getItem("user_id")!)
@@ -18,38 +19,48 @@ const ImageProcess: React.FC = () => {
     ? parseInt(localStorage.getItem("guest")!)
     : undefined;
 
-  // Sử dụng hook useImageProcess
   const {
+    isProcessing,
+    imageInfo,
     inputPreview,
-    outputImage,
-    lrResized,
-    scale,
-    setScale,
+    results,
+    selectedScale,
+    setSelectedScale,
     handleFileChange,
-    handleSubmit,
+    handleSaveAndDownload,
     handleClear,
-  } = useImageProcess(enqueueSnackbar, userId, sessionId);
+  } = useImageProcessLogic(enqueueSnackbar, userId, sessionId);
 
-  const handleTabChange = (newTab: number) => {
-    setTab(newTab);
-    if (newTab === 1) navigate("/evaluate");
-    else if (newTab === 2) navigate("/history");
-  };
+  const {
+    tab,
+    handleTabChange,
+  } = useHeader(navigate); // Truyền navigate vào useHeader
 
   return (
     <Box>
       <Header tab={tab} setTab={handleTabChange} />
       <Toolbar />
-      <ImageProcessForm
-        inputPreview={inputPreview}
-        outputImage={outputImage}
-        lrResized={lrResized}
-        scale={scale}
-        setScale={setScale}
-        handleFileChange={handleFileChange}
-        handleSubmit={handleSubmit}
-        handleClear={handleClear}
-      />
+      {!inputPreview ? (
+        <ImageUploader
+          onImageChange={handleFileChange}
+          onReset={handleClear}
+          preview={inputPreview}
+          width="800px"
+          height="600px"
+        />
+      ) : isProcessing ? (
+        <LoadingSpinner height="600px" />
+      ) : (
+        <EnhancementInterface
+          inputPreview={inputPreview}
+          results={results as Record<2 | 3 | 4, { lrResized: string; output: string }>}
+          scale={selectedScale}
+          setScale={setSelectedScale}
+          handleSave={handleSaveAndDownload}
+          handleClear={handleClear}
+          imageInfo={imageInfo}
+        />
+      )}
     </Box>
   );
 };

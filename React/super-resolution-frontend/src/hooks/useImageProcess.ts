@@ -1,56 +1,43 @@
+// hooks/useImageProcess.ts
 import { useState } from "react";
 import { processImage, saveImageHistory } from "../services/api";
 import { ProcessImageResponse, ImageHistoryRequest } from "../types/api";
 
-export const useImageProcess = (enqueueSnackbar: (message: string, options: any) => void, userId?: number, sessionId?: number) => {
+export const useImageProcess = (
+  enqueueSnackbar: (message: string, options: any) => void,
+  userId?: number,
+  sessionId?: number
+) => {
   const [inputImage, setInputImage] = useState<File | null>(null);
   const [inputPreview, setInputPreview] = useState<string | null>(null);
-  const [outputImage, setOutputImage] = useState<string | null>(null);
-  const [lrResized, setLrResized] = useState<string | null>(null);
-  const [scale, setScale] = useState<2 | 3 | 4>(2);
+  const [results, setResults] = useState<
+    Partial<Record<2 | 3 | 4, { lrResized: string; output: string }>>
+  >({});
+  const [selectedScale, setSelectedScale] = useState<2 | 3 | 4>(2);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setInputImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setInputPreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
+  const handleProcess = async (file: File, preview: string) => {
+    setInputImage(file);
+    setInputPreview(preview);
 
-  const handleSubmit = async () => {
-    if (!inputImage) {
-      enqueueSnackbar("Vui lòng chọn một ảnh để xử lý!", {
-        variant: "warning",
+    try {
+      const scales: (2 | 3 | 4)[] = [2, 3, 4];
+      const newResults: Partial<Record<2 | 3 | 4, { lrResized: string; output: string }>> = {};
+
+      for (const scale of scales) {
+        const response: ProcessImageResponse = await processImage(file, scale);
+        
+        newResults[scale] = {
+          lrResized: `data:image/png;base64,${response.lr_resized}`,
+          output: `data:image/png;base64,${response.output}`,
+        };
+        // console.log(newResults[scale]!.output);
+      }
+
+      setResults(newResults);
+      enqueueSnackbar("Đã xử lý ảnh với tất cả các mức scale!", {
+        variant: "success",
         autoHideDuration: 2000,
       });
-      return;
-    }
-    try {
-      const response: ProcessImageResponse = await processImage(inputImage, scale);
-      setLrResized(`data:image/png;base64,${response.lr_resized}`);
-      setOutputImage(`data:image/png;base64,${response.output}`);
-
-      if (userId && inputPreview) {
-        const historyRequest: ImageHistoryRequest = {
-          user_id: userId,
-          input_image: inputPreview.split(",")[1],
-          output_image: response.output,
-          scale,
-        };
-        await saveImageHistory(historyRequest);
-      }
-
-      if (sessionId && inputPreview) {
-        const historyRequest: ImageHistoryRequest = {
-          session_id: sessionId,
-          input_image: inputPreview.split(",")[1],
-          output_image: response.output,
-          scale,
-        };
-        await saveImageHistory(historyRequest);
-      }
     } catch (error: any) {
       console.error("Lỗi khi xử lý ảnh:", error);
       enqueueSnackbar(error.response?.data?.detail || "Có lỗi xảy ra khi xử lý ảnh!", {
@@ -60,22 +47,68 @@ export const useImageProcess = (enqueueSnackbar: (message: string, options: any)
     }
   };
 
+  const handleSave = async () => {
+    if (!inputPreview || !results[selectedScale]?.output) {
+      enqueueSnackbar("Không có ảnh để lưu lịch sử!", {
+        variant: "warning",
+        autoHideDuration: 2000,
+      });
+      return;
+    }
+
+    try {
+      const base64Output = results[selectedScale]!.output.split(",")[1];
+
+      if (userId) {
+        const historyRequest: ImageHistoryRequest = {
+          user_id: userId,
+          input_image: inputPreview.split(",")[1],
+          output_image: base64Output,
+          scale: selectedScale,
+        };
+        await saveImageHistory(historyRequest);
+        enqueueSnackbar("Đã lưu lịch sử cho user!", {
+          variant: "success",
+          autoHideDuration: 2000,
+        });
+      }
+
+      if (sessionId) {
+        const historyRequest: ImageHistoryRequest = {
+          session_id: sessionId,
+          input_image: inputPreview.split(",")[1],
+          output_image: base64Output,
+          scale: selectedScale,
+        };
+        await saveImageHistory(historyRequest);
+        enqueueSnackbar("Đã lưu lịch sử cho session!", {
+          variant: "success",
+          autoHideDuration: 2000,
+        });
+      }
+    } catch (error: any) {
+      console.error("Lỗi khi lưu lịch sử:", error);
+      enqueueSnackbar(error.response?.data?.detail || "Có lỗi xảy ra khi lưu lịch sử!", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+    }
+  };
+
   const handleClear = () => {
     setInputImage(null);
     setInputPreview(null);
-    setOutputImage(null);
-    setLrResized(null);
+    setResults({});
   };
 
   return {
     inputImage,
     inputPreview,
-    outputImage,
-    lrResized,
-    scale,
-    setScale,
-    handleFileChange,
-    handleSubmit,
+    results,
+    selectedScale,
+    setSelectedScale,
+    handleProcess,
+    handleSave,
     handleClear,
   };
 };
