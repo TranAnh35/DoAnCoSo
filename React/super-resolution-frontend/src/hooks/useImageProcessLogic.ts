@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useImageProcess } from "./useImageProcess";
+import { ImageHistoryRequest } from "../types/api";
+import { saveImageHistory } from "../services/api";
 
 export const useImageProcessLogic = (
   enqueueSnackbar: (message: string, options?: any) => void,
@@ -21,14 +23,58 @@ export const useImageProcessLogic = (
     selectedScale,
     setSelectedScale,
     handleProcess,
-    handleSave,
     handleClear,
-  } = useImageProcess(enqueueSnackbar, userId, sessionId);
+  } = useImageProcess(enqueueSnackbar);
 
   const handleFileChange = async (file: File, preview: string) => {
     setIsProcessing(true);
     await handleProcess(file, preview);
     setIsProcessing(false);
+  };
+
+  const handleSave = async () => {
+    if (!inputPreview || !results[selectedScale]?.output) {
+      enqueueSnackbar("Không có ảnh để lưu lịch sử!", {
+        variant: "warning",
+        autoHideDuration: 2000,
+      });
+      return;
+    }
+
+    try {
+      const base64Output = results[selectedScale]!.output.split(",")[1];
+
+      if (userId) {
+        const historyRequest: ImageHistoryRequest = {
+          user_id: userId,
+          input_image: inputPreview.split(",")[1],
+          output_image: base64Output,
+          scale: selectedScale,
+        };
+        await saveImageHistory(historyRequest);
+      }
+
+      if (sessionId) {
+        const historyRequest: ImageHistoryRequest = {
+          session_id: sessionId,
+          input_image: inputPreview.split(",")[1],
+          output_image: base64Output,
+          scale: selectedScale,
+        };
+        await saveImageHistory(historyRequest);
+      }
+
+      enqueueSnackbar("Đã lưu lịch sử thành công!", {
+        variant: "success",
+        autoHideDuration: 1500,
+      });
+    } catch (error: any) {
+      console.error("Lỗi khi lưu lịch sử:", error);
+      enqueueSnackbar(error.response?.data?.detail || "Có lỗi xảy ra khi lưu lịch sử!", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+    }
   };
 
   const handleDownload = () => {

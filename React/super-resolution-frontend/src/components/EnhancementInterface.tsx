@@ -40,7 +40,7 @@ interface EnhancementInterfaceProps {
   results: Record<2 | 3 | 4, { lrResized: string; output: string }>;
   scale: 2 | 3 | 4;
   setScale: (scale: 2 | 3 | 4) => void;
-  handleSave: () => void;
+  handleSaveAndDownload: () => void;
   handleClear: () => void;
   imageInfo: {
     name: string;
@@ -99,7 +99,7 @@ const EnhancementInterface: React.FC<EnhancementInterfaceProps> = ({
   results,
   scale,
   setScale,
-  handleSave,
+  handleSaveAndDownload,
   handleClear,
   imageInfo,
 }) => {
@@ -162,7 +162,7 @@ const EnhancementInterface: React.FC<EnhancementInterfaceProps> = ({
           </div>
           {/* Di chuyển nút Lưu và Quay lại xuống dưới cùng */}
           <div css={actionButtonsStyle}>
-            <button onClick={handleSave} css={submitButtonStyle}>
+            <button onClick={handleSaveAndDownload} css={submitButtonStyle}>
               <span css={iconStyle}>
                 <ZoomIn />
               </span>

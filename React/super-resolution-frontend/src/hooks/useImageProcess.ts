@@ -1,12 +1,10 @@
 // hooks/useImageProcess.ts
 import { useState } from "react";
-import { processImage, saveImageHistory } from "../services/api";
-import { ProcessImageResponse, ImageHistoryRequest } from "../types/api";
+import { processImage } from "../services/api";
+import { ProcessImageResponse } from "../types/api";
 
 export const useImageProcess = (
-  enqueueSnackbar: (message: string, options: any) => void,
-  userId?: number,
-  sessionId?: number
+  enqueueSnackbar: (message: string, options: any) => void
 ) => {
   const [inputImage, setInputImage] = useState<File | null>(null);
   const [inputPreview, setInputPreview] = useState<string | null>(null);
@@ -30,65 +28,16 @@ export const useImageProcess = (
           lrResized: `data:image/png;base64,${response.lr_resized}`,
           output: `data:image/png;base64,${response.output}`,
         };
-        // console.log(newResults[scale]!.output);
       }
 
       setResults(newResults);
-      enqueueSnackbar("Đã xử lý ảnh với tất cả các mức scale!", {
+      enqueueSnackbar("Đã xử lý ảnh hoàn tất!", {
         variant: "success",
         autoHideDuration: 2000,
       });
     } catch (error: any) {
       console.error("Lỗi khi xử lý ảnh:", error);
       enqueueSnackbar(error.response?.data?.detail || "Có lỗi xảy ra khi xử lý ảnh!", {
-        variant: "error",
-        autoHideDuration: 2000,
-      });
-    }
-  };
-
-  const handleSave = async () => {
-    if (!inputPreview || !results[selectedScale]?.output) {
-      enqueueSnackbar("Không có ảnh để lưu lịch sử!", {
-        variant: "warning",
-        autoHideDuration: 2000,
-      });
-      return;
-    }
-
-    try {
-      const base64Output = results[selectedScale]!.output.split(",")[1];
-
-      if (userId) {
-        const historyRequest: ImageHistoryRequest = {
-          user_id: userId,
-          input_image: inputPreview.split(",")[1],
-          output_image: base64Output,
-          scale: selectedScale,
-        };
-        await saveImageHistory(historyRequest);
-        enqueueSnackbar("Đã lưu lịch sử cho user!", {
-          variant: "success",
-          autoHideDuration: 2000,
-        });
-      }
-
-      if (sessionId) {
-        const historyRequest: ImageHistoryRequest = {
-          session_id: sessionId,
-          input_image: inputPreview.split(",")[1],
-          output_image: base64Output,
-          scale: selectedScale,
-        };
-        await saveImageHistory(historyRequest);
-        enqueueSnackbar("Đã lưu lịch sử cho session!", {
-          variant: "success",
-          autoHideDuration: 2000,
-        });
-      }
-    } catch (error: any) {
-      console.error("Lỗi khi lưu lịch sử:", error);
-      enqueueSnackbar(error.response?.data?.detail || "Có lỗi xảy ra khi lưu lịch sử!", {
         variant: "error",
         autoHideDuration: 2000,
       });
@@ -108,7 +57,6 @@ export const useImageProcess = (
     selectedScale,
     setSelectedScale,
     handleProcess,
-    handleSave,
     handleClear,
   };
 };

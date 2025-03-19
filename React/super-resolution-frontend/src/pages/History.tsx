@@ -16,6 +16,7 @@ const History: React.FC = () => {
     ? parseInt(localStorage.getItem("guest")!)
     : undefined;
 
+  console.log(sessionId)
   // Sử dụng hook useImageHistory
   const { history, selectedHistory, setSelectedHistory, handleRefreshHistory } =
     useImageHistory(userId, sessionId);

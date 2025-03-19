@@ -56,7 +56,7 @@ const ImageProcess: React.FC = () => {
           results={results as Record<2 | 3 | 4, { lrResized: string; output: string }>}
           scale={selectedScale}
           setScale={setSelectedScale}
-          handleSave={handleSaveAndDownload}
+          handleSaveAndDownload={handleSaveAndDownload}
           handleClear={handleClear}
           imageInfo={imageInfo}
         />

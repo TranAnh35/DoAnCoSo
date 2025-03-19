@@ -1,7 +1,23 @@
+/** @jsxImportSource @emotion/react */
 import React from "react";
-import { Box, Container, Typography, Button } from "@mui/material";
-import ImageUploader from "./ImageUploader";
-import "../styles/ImageProcess.css";
+import { css } from "@emotion/react";
+import { ZoomIn } from "lucide-react";
+import ImageUploader from "./ImageUploader"; // Giả sử bạn đã có component này
+import {
+  mainContainerStyle,
+  previewSectionStyle,
+  previewBoxStyle,
+  controlsSectionStyle,
+  controlsContentStyle,
+  headerStyle,
+  headerTextStyle,
+  infoBoxStyle,
+  infoTextStyle,
+  labelStyle,
+  actionButtonsStyle,
+  submitButtonStyle,
+  iconStyle,
+} from "../styles/enchancementInterfaceStyles"; // Tái sử dụng các style từ EnhancementInterface
 
 interface QualityEvaluateFormProps {
   srPreview: string | null;
@@ -15,6 +31,28 @@ interface QualityEvaluateFormProps {
   handleResetHrImage: () => void;
 }
 
+const metricBoxStyle = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+`;
+
+const metricLabelStyle = css`
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+`;
+
+const metricValueStyle = css`
+  font-size: 18px;
+  font-weight: 600;
+  color: #2563eb;
+`;
+
 const QualityEvaluateForm: React.FC<QualityEvaluateFormProps> = ({
   srPreview,
   hrPreview,
@@ -27,38 +65,79 @@ const QualityEvaluateForm: React.FC<QualityEvaluateFormProps> = ({
   handleResetHrImage,
 }) => {
   return (
-    <Container className="tab1-container">
-      <Typography variant="h5" gutterBottom>
-        Đánh giá chất lượng ảnh
-      </Typography>
-      <Box className="quality-upload-container">
-        <ImageUploader
-          onImageChange={handleSrImageChange}
-          onReset={handleResetSrImage}
-          preview={srPreview}
-        />
-        <ImageUploader
-          onImageChange={handleHrImageChange}
-          onReset={handleResetHrImage}
-          preview={hrPreview}
-        />
-      </Box>
-      <Box className="metrics-container">
-        <Box className="metric-box">
-          <Typography variant="subtitle2">PSNR</Typography>
-          <Typography variant="body1">{psnr !== null ? psnr : "-"}</Typography>
-        </Box>
-        <Box className="metric-box">
-          <Typography variant="subtitle2">SSIM</Typography>
-          <Typography variant="body1">{ssim !== null ? ssim : "-"}</Typography>
-        </Box>
-      </Box>
-      <Box className="calculate-container">
-        <Button variant="contained" onClick={handleEvaluate} className="calculate-button">
-          Tính toán
-        </Button>
-      </Box>
-    </Container>
+    <div css={mainContainerStyle}>
+      {/* Phần preview với 2 ImageUploader */}
+      <div css={previewSectionStyle}>
+        <div css={previewBoxStyle}>
+          <div
+            css={css`
+              display: flex;
+              justify-content: space-between;
+              height: 100%;
+            `}
+          >
+            <div css={css`flex: 1;`}>
+              <ImageUploader
+                onImageChange={handleSrImageChange}
+                onReset={handleResetSrImage}
+                preview={srPreview}
+                height='70vh'
+              />
+            </div>
+            <div css={css`flex: 1;`}>
+              <ImageUploader
+                onImageChange={handleHrImageChange}
+                onReset={handleResetHrImage}
+                preview={hrPreview}
+                height='70vh'
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Phần controls với PSNR, SSIM và nút Tính toán */}
+      <div css={controlsSectionStyle}>
+        <div css={controlsContentStyle}>
+          <div css={headerStyle}>
+            <h2 css={headerTextStyle}>Đánh giá chất lượng</h2>
+          </div>
+          <div css={infoBoxStyle}>
+            <p css={infoTextStyle}>
+              Tải lên ảnh SR và HR để tính toán chỉ số PSNR và SSIM.
+            </p>
+          </div>
+          <div>
+            <label css={labelStyle}>Chỉ số chất lượng</label>
+            <div
+              css={css`
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+              `}
+            >
+              <div css={metricBoxStyle}>
+                <span css={metricLabelStyle}>PSNR</span>
+                <span css={metricValueStyle}>{psnr !== null ? psnr : "-"}</span>
+              </div>
+              <div css={metricBoxStyle}>
+                <span css={metricLabelStyle}>SSIM</span>
+                <span css={metricValueStyle}>{ssim !== null ? ssim : "-"}</span>
+              </div>
+            </div>
+          </div>
+          {/* Nút Tính toán */}
+          <div css={actionButtonsStyle}>
+            <button onClick={handleEvaluate} css={submitButtonStyle}>
+              <span css={iconStyle}>
+                <ZoomIn />
+              </span>
+              <span>Tính toán</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

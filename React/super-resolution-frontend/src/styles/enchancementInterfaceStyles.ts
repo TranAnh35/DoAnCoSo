@@ -3,9 +3,9 @@ import { css } from '@emotion/react';
 
 export const mainContainerStyle = css`
   display: flex;
-  height: 100vh;
+  height: 92vh;
+  width: 100vw;
   background-color: #f9fafb;
-  margin-top: 32px; 
 `;
 
 export const previewSectionStyle = css`
@@ -202,9 +202,11 @@ export const clearButtonStyle = css`
 
 export const containerStyle = css`
   position: relative;
-  width: 1024px;
-  height: 800px;
+  width: 90vh;
+  height: 85vh;
   overflow: hidden;
+  item-align: center;
+  justify-content: center;
 `;
 
 export const lrImageStyle = css`

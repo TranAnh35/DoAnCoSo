@@ -18,9 +18,6 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 }) => {
   return (
     <Container className="tab2-container">
-      <Typography variant="h5" gutterBottom>
-        Lịch sử ảnh
-      </Typography>
       <Box className="history-bar">
         <FormControl className="history-select">
           <InputLabel>🕒 Chọn lịch sử</InputLabel>

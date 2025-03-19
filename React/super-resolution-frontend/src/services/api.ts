@@ -38,6 +38,7 @@ export const saveImageHistory = async (data: ImageHistoryRequest): Promise<{ mes
 
 export const getImageHistory = async (userId?: number, sessionId?: number): Promise<ImageHistoryResponse> => {
   const params = userId ? { user_id: userId } : { session_id: sessionId };
+  console.log(params);
   const response = await api.get<ImageHistoryResponse>('/image/history', { params });
   return response.data;
 };
