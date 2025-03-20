@@ -18,13 +18,26 @@ export const useImageProcess = (
     setInputPreview(preview);
 
     try {
+
+      const user_id = localStorage.getItem("user_id");
+
       const scales: (2 | 3 | 4)[] = [2, 3, 4];
       const newResults: Partial<Record<2 | 3 | 4, { lrResized: string; output: string }>> = {};
 
-      for (const scale of scales) {
-        const response: ProcessImageResponse = await processImage(file, scale);
-        
-        newResults[scale] = {
+      if (user_id) {
+        for (const scale of scales) {
+          const response: ProcessImageResponse = await processImage(file, scale);
+          
+          newResults[scale] = {
+            lrResized: `data:image/png;base64,${response.lr_resized}`,
+            output: `data:image/png;base64,${response.output}`,
+          };
+        }
+      }
+      else {
+        const response: ProcessImageResponse = await processImage(file, 2);
+
+        newResults[2] = {
           lrResized: `data:image/png;base64,${response.lr_resized}`,
           output: `data:image/png;base64,${response.output}`,
         };
