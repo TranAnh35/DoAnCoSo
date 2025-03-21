@@ -17,6 +17,9 @@ import {
   actionButtonsStyle,
   submitButtonStyle,
   iconStyle,
+  metricBoxStyle,
+  metricLabelStyle,
+  metricValueStyle,
 } from "../styles/enchancementInterfaceStyles"; // Tái sử dụng các style từ EnhancementInterface
 
 interface QualityEvaluateFormProps {
@@ -31,28 +34,6 @@ interface QualityEvaluateFormProps {
   handleResetHrImage: () => void;
 }
 
-const metricBoxStyle = css`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-`;
-
-const metricLabelStyle = css`
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-`;
-
-const metricValueStyle = css`
-  font-size: 18px;
-  font-weight: 600;
-  color: #2563eb;
-`;
-
 const QualityEvaluateForm: React.FC<QualityEvaluateFormProps> = ({
   srPreview,
   hrPreview,
@@ -66,7 +47,6 @@ const QualityEvaluateForm: React.FC<QualityEvaluateFormProps> = ({
 }) => {
   return (
     <div css={mainContainerStyle}>
-      {/* Phần preview với 2 ImageUploader */}
       <div css={previewSectionStyle}>
         <div css={previewBoxStyle}>
           <div

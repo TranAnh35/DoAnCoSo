@@ -320,3 +320,25 @@ export const labelRightStyle = css`
   font-size: 14px;
   z-index: 10;
 `;
+
+export const metricBoxStyle = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+`;
+
+export const metricLabelStyle = css`
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+`;
+
+export const metricValueStyle = css`
+  font-size: 18px;
+  font-weight: 600;
+  color: #2563eb;
+`;

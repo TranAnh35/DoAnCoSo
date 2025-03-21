@@ -16,7 +16,7 @@ const History: React.FC = () => {
     ? parseInt(localStorage.getItem("guest")!)
     : undefined;
 
-  console.log(sessionId)
+  console.log(sessionId);
   // Sử dụng hook useImageHistory
   const { history, selectedHistory, setSelectedHistory, handleRefreshHistory } =
     useImageHistory(userId, sessionId);
@@ -25,6 +25,11 @@ const History: React.FC = () => {
     setTab(newTab);
     if (newTab === 0) navigate("/process");
     else if (newTab === 1) navigate("/evaluate");
+  };
+
+  // Hàm xử lý nút Quay lại
+  const handleBack = () => {
+    navigate("/process"); // Quay lại trang process hoặc trang bạn muốn
   };
 
   return (
@@ -36,6 +41,7 @@ const History: React.FC = () => {
         selectedHistory={selectedHistory}
         setSelectedHistory={setSelectedHistory}
         handleRefreshHistory={handleRefreshHistory}
+        handleBack={handleBack} // Truyền hàm handleBack vào HistoryForm
       />
     </Box>
   );
