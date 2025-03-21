@@ -7,7 +7,10 @@ import { useSnackbar } from "notistack";
 
 const SignIn: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+  }>({});
 
   const { handleSignIn, handleGuestLogin } = useAuth(enqueueSnackbar);
 

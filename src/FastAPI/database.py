@@ -9,7 +9,7 @@ import cv2
 import re
 
 # URL kết nối PostgreSQL
-URL_DATABASE = 'postgresql://postgres:123456@localhost:3525/super_resolution'
+URL_DATABASE = 'postgresql://test:123456@localhost:23/postgres'
 
 # Tạo engine và session
 engine = create_engine(URL_DATABASE)
