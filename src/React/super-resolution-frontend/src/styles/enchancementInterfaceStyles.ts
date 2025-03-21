@@ -21,8 +21,10 @@ export const previewBoxStyle = css`
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 1280px; 
-  height: 856px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+   max-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -169,6 +171,8 @@ export const containerStyle = css`
   position: relative;
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -178,7 +182,9 @@ export const containerStyle = css`
 export const lrImageStyle = css`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -188,7 +194,9 @@ export const lrImageStyle = css`
 export const hrImageStyle = (sliderPosition: number) => css`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -245,22 +253,74 @@ export const rightArrowStyle = css`
   left: 20px;
 `;
 
-export const labelLeftStyle = css`
+// export const labelLeftStyle = css`
+//   position: absolute;
+//   bottom: 20px;
+//   left: 20px;
+//   color: rgba(0, 0, 0, 0.5);
+//   padding: 5px 10px;
+//   font-size: 14px;
+//   z-index: 10;
+// `;
+
+// export const labelRightStyle = css`
+//   position: absolute;
+//   bottom: 20px;
+//   right: 20px;
+//   color: #2196f3;
+//   padding: 5px 10px;
+//   font-size: 14px;
+//   z-index: 10;
+// `;
+
+// export const sizeTagLeftStyle = css`
+//   position: absolute;
+//   top: 10px;
+//   left: 10px;
+//   background-color: rgba(0, 0, 0, 0.5);
+//   color: white;
+//   padding: 5px 10px;
+//   border-radius: 5px;
+//   font-size: 12px;
+//   z-index: 10;
+// `;
+
+// export const sizeTagRightStyle = css`
+//   position: absolute;
+//   top: 10px;
+//   right: 10px;
+//   background-color: #2196f3;
+//   color: white;
+//   padding: 5px 10px;
+//   border-radius: 5px;
+//   font-size: 12px;
+//   z-index: 10;
+// `;
+
+export const sizeTagLeftStyle = css`
   position: absolute;
-  bottom: 20px;
-  left: 20px;
-  color: rgba(0, 0, 0, 0.5);
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
   padding: 5px 10px;
-  font-size: 14px;
+  border-radius: 5px;
+  font-size: 12px;
   z-index: 10;
+  width: 80px;
+  text-align: center;
 `;
 
-export const labelRightStyle = css`
+export const sizeTagRightStyle = css`
   position: absolute;
-  bottom: 20px;
-  right: 20px;
-  color: #2196f3;
+  top: 10px;
+  right: 10px;
+  background-color:rgba(33, 149, 243, 0.75);
+  color: white;
   padding: 5px 10px;
-  font-size: 14px;
+  border-radius: 5px;
+  font-size: 12px;
   z-index: 10;
+  width: 80px;
+  text-align: center;
 `;

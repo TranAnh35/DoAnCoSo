@@ -6,7 +6,6 @@ import ImageUploader from "./ImageUploader";
 import {
   mainContainerStyle,
   previewSectionStyle,
-  previewBoxStyle,
   controlsSectionStyle,
   controlsContentStyle,
   headerStyle,

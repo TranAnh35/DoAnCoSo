@@ -1,5 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { css } from "@emotion/react";
+import { useEffect } from "react";
 import { ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   mainContainerStyle,
@@ -28,8 +30,8 @@ import {
   dividerStyle,
   leftArrowStyle,
   rightArrowStyle,
-  labelLeftStyle,
-  labelRightStyle,
+  sizeTagLeftStyle,
+  sizeTagRightStyle,
 } from "../styles/enchancementInterfaceStyles";
 
 interface EnhancementInterfaceProps {
@@ -53,16 +55,101 @@ const ComparisonSlider: React.FC<{
   targetSize: string;
   lrLabel: string;
   hrLabel: string;
-}> = ({ lrImage, hrImage, lrLabel, hrLabel }) => {
+}> = ({ lrImage, hrImage, originalSize, targetSize, lrLabel, hrLabel }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
+
+  const [imageBounds, setImageBounds] = useState({
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0,
+  });
+  const imageRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSliderPosition(Number(e.target.value));
   };
 
+  useEffect(() => {
+    const updateImageBounds = () => {
+      if (imageRef.current && containerRef.current) {
+        const img = imageRef.current;
+        const container = containerRef.current;
+        
+        const naturalWidth = img.naturalWidth;
+        const naturalHeight = img.naturalHeight;        
+
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        let scaledWidth = containerWidth;
+        let scaledHeight = (naturalHeight / naturalWidth) * containerWidth;
+        
+        if (scaledHeight > containerHeight) {
+          scaledHeight = containerHeight;
+          scaledWidth = (naturalWidth / naturalHeight) * containerHeight;
+        }
+
+        const left = (containerWidth - scaledWidth) / 2;
+        const top = (containerHeight - scaledHeight) / 2;      
+
+        setImageBounds({
+          top,
+          left,
+          width: scaledWidth,
+          height: scaledHeight,
+        });
+      }
+    };
+
+    if (imageRef.current) {
+      if (imageRef.current.complete) {
+        updateImageBounds();
+      } else {
+        imageRef.current.onload = updateImageBounds;
+      }
+    }
+
+    window.addEventListener("resize", updateImageBounds);
+    return () => window.removeEventListener("resize", updateImageBounds);
+  }, [lrImage]);
+
+  const dynamicSizeTagLeftStyle = css`
+    ${sizeTagLeftStyle};
+    top: ${imageBounds.top + 10}px;
+    left: ${imageBounds.left + 10}px;
+  `;
+
+  const dynamicSizeTagRightStyle = css`
+    ${sizeTagRightStyle};
+    top: ${imageBounds.top + 10}px;
+    left: ${imageBounds.left + imageBounds.width - 10}px;
+    transform: translateX(-100%);
+  `;
+
+  const dynamicLabelLeftStyle = css`
+    ${sizeTagLeftStyle};
+    top: ${imageBounds.top + imageBounds.height - 10}px;
+    left: ${imageBounds.left + 10}px;
+    transform: translateY(-100%);
+  `;
+
+  const dynamicLabelRightStyle = css`
+    ${sizeTagRightStyle};
+    top: ${imageBounds.top + imageBounds.height - 10}px;
+    left: ${imageBounds.left + imageBounds.width - 10}px;
+    transform: translate(-100%, -100%);
+  `;
+
   return (
-    <div css={containerStyle}>
-      <img src={lrImage} alt="Low Resolution" css={lrImageStyle} />
+    <div ref={containerRef} css={containerStyle}>
+      <img
+        ref={imageRef}
+        src={lrImage}
+        alt="Low Resolution"
+        css={lrImageStyle}
+      />
       <img
         src={hrImage}
         alt="High Resolution"
@@ -85,8 +172,11 @@ const ComparisonSlider: React.FC<{
           <ChevronRight />
         </div>
       </div>
-      <div css={labelLeftStyle}>{lrLabel}</div>
-      <div css={labelRightStyle}>{hrLabel}</div>
+      {/* Labels with dynamic positions */}
+      <div css={dynamicSizeTagLeftStyle}>{originalSize} px</div>
+      <div css={dynamicSizeTagRightStyle}>{targetSize} px</div>
+      <div css={dynamicLabelLeftStyle}>{lrLabel}</div>
+      <div css={dynamicLabelRightStyle}>{hrLabel}</div>
     </div>
   );
 };
@@ -142,9 +232,6 @@ const EnhancementInterface: React.FC<EnhancementInterfaceProps> = ({
                 : ""}
             </p>
           </div>
-          <p css={infoTextStyle}>
-            Kích thước: {imageInfo.originalSize} px → {imageInfo.targetSize} px
-          </p>
           <div>
             <label css={labelStyle}>Hệ số kích thước</label>
             <div css={scaleButtonsStyle}>
