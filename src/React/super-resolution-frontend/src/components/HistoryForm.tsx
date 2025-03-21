@@ -1,80 +1,6 @@
-// /** @jsxImportSource @emotion/react */
-// import React from "react";
-// import { css } from "@emotion/react";
-// import { Box, Container, Typography, FormControl, InputLabel, Select, Button } from "@mui/material";
-// import MenuItem from "@mui/material/MenuItem";
-// import ImageUploader from "./ImageUploader";
-// import { 
-//   mainContainerStyle,
-//   previewSectionStyle,
-//   previewBoxStyle,
-//   } from "../styles/enchancementInterfaceStyles";
-
-// interface HistoryFormProps {
-//   history: any;
-//   selectedHistory: string;
-//   setSelectedHistory: (value: string) => void;
-//   handleRefreshHistory: () => void;
-// }
-
-// const HistoryForm: React.FC<HistoryFormProps> = ({
-//   history,
-//   selectedHistory,
-//   setSelectedHistory,
-//   handleRefreshHistory,
-// }) => {
-//   return (
-//     <Container className="tab2-container">
-//       <Box className="history-bar">
-//         <FormControl className="history-select">
-//           <InputLabel>🕒 Chọn lịch sử</InputLabel>
-//           <Select
-//             value={selectedHistory || ""}
-//             onChange={(e) => setSelectedHistory(e.target.value as string)}
-//             label="Chọn lịch sử"
-//           >
-//             {history && Object.keys(history).length > 0 ? (
-//               Object.keys(history).map((key) => (
-//                 <MenuItem key={key} value={key}>
-//                   {key}
-//                 </MenuItem>
-//               ))
-//             ) : (
-//               <MenuItem value="Chưa có lịch sử">Chưa có lịch sử</MenuItem>
-//             )}
-//           </Select>
-//         </FormControl>
-//         <Button
-//           variant="contained"
-//           color="primary"
-//           onClick={handleRefreshHistory}
-//           className="history-refresh-button"
-//         >
-//           🔄 Làm mới lịch sử
-//         </Button>
-//       </Box>
-//       {selectedHistory && history && history[selectedHistory] && (
-//         <Box className="history-images">
-//           <img
-//             src={`data:image/png;base64,${history[selectedHistory].input_image}`}
-//             alt="Input"
-//             style={{ maxWidth: "300px" }}
-//           />
-//           <img
-//             src={`data:image/png;base64,${history[selectedHistory].output_image}`}
-//             alt="Output"
-//             style={{ maxWidth: "300px" }}
-//           />
-//         </Box>
-//       )}
-//     </Container>
-//   );
-// };
-
-// export default HistoryForm;
-
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { css } from "@emotion/react";
 import { ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   mainContainerStyle,
@@ -89,7 +15,6 @@ import {
   infoTextStyle,
   actionButtonsStyle,
   submitButtonStyle,
-  clearButtonStyle,
   iconStyle,
   containerStyle,
   lrImageStyle,
@@ -101,8 +26,6 @@ import {
   rightArrowStyle,
   sizeTagLeftStyle,
   sizeTagRightStyle,
-  labelLeftStyle,
-  labelRightStyle,
 } from "../styles/enchancementInterfaceStyles";
 import { FormControl, InputLabel, Select, Button } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
@@ -112,7 +35,7 @@ interface HistoryFormProps {
   selectedHistory: string;
   setSelectedHistory: (value: string) => void;
   handleRefreshHistory: () => void;
-  handleBack: () => void; // Thêm hàm xử lý nút Quay lại
+  handleDownload: () => void;
 }
 
 const ComparisonSlider: React.FC<{
@@ -121,16 +44,92 @@ const ComparisonSlider: React.FC<{
   lrLabel: string;
   hrLabel: string;
 }> = ({ lrImage, hrImage, lrLabel, hrLabel }) => {
-  const [sliderPosition, setSliderPosition] = React.useState(50);
+  const [sliderPosition, setSliderPosition] = useState(50);
+  const [imageBounds, setImageBounds] = useState({
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0,
+  });
+
+  const imageRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSliderPosition(Number(e.target.value));
   };
 
+  useEffect(() => {
+    const updateImageBounds = () => {
+      if (imageRef.current && containerRef.current) {
+        const img = imageRef.current;
+        const container = containerRef.current;
+
+        const naturalWidth = img.naturalWidth;
+        const naturalHeight = img.naturalHeight;
+
+        // Get container dimensions
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        let scaledWidth = containerWidth;
+        let scaledHeight = (naturalHeight / naturalWidth) * containerWidth;
+
+        if (scaledHeight > containerHeight) {
+          scaledHeight = containerHeight;
+          scaledWidth = (naturalWidth / naturalHeight) * containerHeight;
+        }
+
+        const left = (containerWidth - scaledWidth) / 2;
+        const top = (containerHeight - scaledHeight) / 2;
+
+        setImageBounds({
+          top,
+          left,
+          width: scaledWidth,
+          height: scaledHeight,
+        });
+      }
+    };
+
+    if (imageRef.current) {
+      if (imageRef.current.complete) {
+        updateImageBounds();
+      } else {
+        imageRef.current.onload = updateImageBounds;
+      }
+    }
+
+    window.addEventListener("resize", updateImageBounds);
+    return () => window.removeEventListener("resize", updateImageBounds);
+  }, [lrImage]);
+
+  const dynamicSizeTagLeftStyle = css`
+    ${sizeTagLeftStyle};
+    top: ${imageBounds.top + 10}px;
+    left: ${imageBounds.left + 10}px;
+  `;
+
+  const dynamicSizeTagRightStyle = css`
+    ${sizeTagRightStyle};
+    top: ${imageBounds.top + 10}px;
+    left: ${imageBounds.left + imageBounds.width - 10}px;
+    transform: translateX(-100%);
+  `;
+
   return (
-    <div css={containerStyle}>
-      <img src={lrImage} alt="Low Resolution" css={lrImageStyle} />
-      <img src={hrImage} alt="High Resolution" css={hrImageStyle(sliderPosition)} />
+    <div ref={containerRef} css={containerStyle}>
+      <img
+        ref={imageRef}
+        src={lrImage}
+        alt="Low Resolution"
+        css={lrImageStyle}
+      />
+      <img
+        src={hrImage}
+        alt="High Resolution"
+        css={hrImageStyle(sliderPosition)}
+      />
       <input
         type="range"
         min="0"
@@ -148,8 +147,8 @@ const ComparisonSlider: React.FC<{
           <ChevronRight />
         </div>
       </div>
-      <div css={labelLeftStyle}>{lrLabel}</div>
-      <div css={labelRightStyle}>{hrLabel}</div>
+      <div css={dynamicSizeTagLeftStyle}>{lrLabel}</div>
+      <div css={dynamicSizeTagRightStyle}>{hrLabel}</div>
     </div>
   );
 };
@@ -159,7 +158,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
   selectedHistory,
   setSelectedHistory,
   handleRefreshHistory,
-  handleBack,
+  handleDownload,
 }) => {
   return (
     <div css={mainContainerStyle}>
@@ -220,8 +219,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
               </span>
               <span>Làm mới</span>
             </Button>
-            <button onClick={handleBack} css={clearButtonStyle}>
-              Quay lại
+            <button onClick={handleDownload} css={submitButtonStyle}>
+              Tải xuống
             </button>
           </div>
         </div>

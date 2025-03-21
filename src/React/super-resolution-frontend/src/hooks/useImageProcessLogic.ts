@@ -8,7 +8,9 @@ import { saveImageHistory } from "../services/api";
 export const useImageProcessLogic = (
   enqueueSnackbar: (message: string, options?: any) => void,
   userId?: number,
-  sessionId?: number
+  sessionId?: number,
+  history?: any,
+  selectedHistory?: string
 ) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [imageInfo, setImageInfo] = useState({
@@ -78,11 +80,29 @@ export const useImageProcessLogic = (
   };
 
   const handleDownload = () => {
-    const result = results[selectedScale];
-    if (!result?.output) return;
+    let outputImage: string | undefined;
+
+    // Nếu có selectedHistory và history (trang History)
+    if (selectedHistory && history && history[selectedHistory]) {
+      outputImage = `data:image/png;base64,${history[selectedHistory].output_image}`;
+    }
+    // Nếu không, dùng results từ process (trang Process)
+    else {
+      const result = results[selectedScale];
+      outputImage = result?.output;
+    }
+
+    if (!outputImage) {
+      enqueueSnackbar("Không có ảnh để tải xuống!", {
+        variant: "warning",
+        autoHideDuration: 2000,
+      });
+      return;
+    }
+
     const link = document.createElement("a");
-    link.href = result.output;
-    link.download = `super_resolution_${selectedScale}x.png`;
+    link.href = outputImage;
+    link.download = `super_resolution_${selectedHistory ? history[selectedHistory].scale : selectedScale}x.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -121,5 +141,6 @@ export const useImageProcessLogic = (
     handleFileChange,
     handleSaveAndDownload,
     handleClear,
+    handleDownload,
   };
 };

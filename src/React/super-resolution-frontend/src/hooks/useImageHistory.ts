@@ -5,8 +5,7 @@ import { ImageHistoryResponse } from "../types/api";
 export const useImageHistory = (userId?: number, session_id?: number) => {
   const [history, setHistory] = useState<ImageHistoryResponse | null>(null);
   const [selectedHistory, setSelectedHistory] = useState<string>("");
-
-  console.log(session_id)
+  
   useEffect(() => {
     getImageHistory(userId, session_id).then(setHistory).catch(console.error);
   }, [userId, session_id]);
