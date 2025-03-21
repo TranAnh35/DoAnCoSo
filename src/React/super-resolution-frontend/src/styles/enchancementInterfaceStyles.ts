@@ -1,4 +1,3 @@
-// styles/enhancementInterfaceStyles.ts
 import { css } from '@emotion/react';
 
 export const mainContainerStyle = css`
@@ -11,6 +10,9 @@ export const mainContainerStyle = css`
 export const previewSectionStyle = css`
   flex: 1;
   padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const previewBoxStyle = css`
@@ -19,56 +21,19 @@ export const previewBoxStyle = css`
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  width: 1280px; 
+  height: 856px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
 `;
-
-export const sizeTagStyle = css`
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  background-color: rgba(31, 41, 55, 0.7);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-`;
-
 
 export const previewImageStyle = css`
   width: 100%;
-  height: calc(100vh - 120px);
-  object-fit: contain;
-`;
-
-export const footerStyle = css`
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-export const fileNameStyle = css`
-  font-size: 14px;
-  color: #6b7280;
-`;
-
-export const sizeInfoStyle = css`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-export const originalSizeStyle = css`
-  font-size: 14px;
-  color: #6b7280;
-`;
-
-export const targetSizeStyle = css`
-  font-size: 14px;
-  color: #2563eb;
-  font-weight: 500;
+  height: 100%;
+  object-fit: cover; /* Thay đổi từ contain thành cover */
 `;
 
 export const controlsSectionStyle = css`
@@ -111,7 +76,7 @@ export const infoTextStyle = css`
 
 export const notiTextStyle = css`
   font-size: 14px;
-  color:rgb(255, 145, 0);
+  color: rgb(255, 145, 0);
 `;
 
 export const labelStyle = css`
@@ -147,12 +112,12 @@ export const scaleButtonStyle = (isActive: boolean) => css`
   }
 
   &:disabled {
-    background-color: #f0f0f0; /* Màu xám nhạt khi disabled */
-    color: #999; /* Chữ xám để rõ ràng */
+    background-color: #f0f0f0;
+    color: #999;
     border-color: #ccc;
     cursor: not-allowed;
     opacity: 0.6;
-    transform: none; /* Loại bỏ hiệu ứng hover/active khi disabled */
+    transform: none;
   }
 `;
 
@@ -202,29 +167,32 @@ export const clearButtonStyle = css`
 
 export const containerStyle = css`
   position: relative;
-  width: 90vh;
-  height: 85vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  item-align: center;
+  display: flex;
   justify-content: center;
+  align-items: center;
 `;
 
 export const lrImageStyle = css`
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
-  
+
 export const hrImageStyle = (sliderPosition: number) => css`
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   clip-path: inset(0 0 0 ${sliderPosition}%);
 `;
 
@@ -277,34 +245,10 @@ export const rightArrowStyle = css`
   left: 20px;
 `;
 
-export const sizeTagLeftStyle = css`
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  z-index: 10;
-`;
-
-export const sizeTagRightStyle = css`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #2196f3;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  z-index: 10;
-`;
-
 export const labelLeftStyle = css`
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  bottom: 20px;
+  left: 20px;
   color: rgba(0, 0, 0, 0.5);
   padding: 5px 10px;
   font-size: 14px;
@@ -313,32 +257,10 @@ export const labelLeftStyle = css`
 
 export const labelRightStyle = css`
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 20px;
+  right: 20px;
   color: #2196f3;
   padding: 5px 10px;
   font-size: 14px;
   z-index: 10;
-`;
-
-export const metricBoxStyle = css`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-`;
-
-export const metricLabelStyle = css`
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-`;
-
-export const metricValueStyle = css`
-  font-size: 18px;
-  font-weight: 600;
-  color: #2563eb;
 `;

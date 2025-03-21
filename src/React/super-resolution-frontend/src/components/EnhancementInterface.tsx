@@ -1,4 +1,3 @@
-// component/EnhancementInterface.ts
 /** @jsxImportSource @emotion/react */
 import React, { useState } from "react";
 import { ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
@@ -29,8 +28,6 @@ import {
   dividerStyle,
   leftArrowStyle,
   rightArrowStyle,
-  sizeTagLeftStyle,
-  sizeTagRightStyle,
   labelLeftStyle,
   labelRightStyle,
 } from "../styles/enchancementInterfaceStyles";
@@ -44,8 +41,8 @@ interface EnhancementInterfaceProps {
   handleClear: () => void;
   imageInfo: {
     name: string;
-    originalSize: string; // Kích thước ảnh LR
-    targetSize: string;   // Kích thước ảnh HR
+    originalSize: string;
+    targetSize: string;
   };
 }
 
@@ -56,7 +53,7 @@ const ComparisonSlider: React.FC<{
   targetSize: string;
   lrLabel: string;
   hrLabel: string;
-}> = ({ lrImage, hrImage, originalSize, targetSize, lrLabel, hrLabel }) => {
+}> = ({ lrImage, hrImage, lrLabel, hrLabel }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,8 +62,12 @@ const ComparisonSlider: React.FC<{
 
   return (
     <div css={containerStyle}>
-      <img src={lrImage} alt="Low Resolution" css={lrImageStyle} /> {/* LR bên trái */}
-      <img src={hrImage} alt="High Resolution" css={hrImageStyle(sliderPosition)} /> {/* HR bên phải */}
+      <img src={lrImage} alt="Low Resolution" css={lrImageStyle} />
+      <img
+        src={hrImage}
+        alt="High Resolution"
+        css={hrImageStyle(sliderPosition)}
+      />
       <input
         type="range"
         min="0"
@@ -84,10 +85,6 @@ const ComparisonSlider: React.FC<{
           <ChevronRight />
         </div>
       </div>
-      {/* Hiển thị kích thước ở hai góc trên */}
-      <div css={sizeTagLeftStyle}>{originalSize} px</div>
-      <div css={sizeTagRightStyle}>{targetSize} px</div>
-      {/* Hiển thị label ở hai góc dưới */}
       <div css={labelLeftStyle}>{lrLabel}</div>
       <div css={labelRightStyle}>{hrLabel}</div>
     </div>
@@ -103,14 +100,16 @@ const EnhancementInterface: React.FC<EnhancementInterfaceProps> = ({
   handleClear,
   imageInfo,
 }) => {
-  // Kiểm tra trạng thái đăng nhập từ localStorage
   const isGuest = localStorage.getItem("guest") !== null;
 
   return (
     <div css={mainContainerStyle}>
       <div css={previewSectionStyle}>
         <div css={previewBoxStyle}>
-          {results && results[scale] && results[scale].lrResized && results[scale].output ? (
+          {results &&
+          results[scale] &&
+          results[scale].lrResized &&
+          results[scale].output ? (
             <ComparisonSlider
               lrImage={results[scale].lrResized}
               hrImage={results[scale].output}
@@ -138,13 +137,14 @@ const EnhancementInterface: React.FC<EnhancementInterfaceProps> = ({
               Chọn hệ số kích thước để xem kết quả nâng cấp.
             </p>
             <p css={notiTextStyle}>
-              {isGuest ? (
-                "Hãy đăng kí tài khoản để có thể trải nghiệm được tính năng cao cấp"
-              ) : (
-                ""
-              )}
+              {isGuest
+                ? "Hãy đăng kí tài khoản để có thể trải nghiệm được tính năng cao cấp"
+                : ""}
             </p>
           </div>
+          <p css={infoTextStyle}>
+            Kích thước: {imageInfo.originalSize} px → {imageInfo.targetSize} px
+          </p>
           <div>
             <label css={labelStyle}>Hệ số kích thước</label>
             <div css={scaleButtonsStyle}>
@@ -153,14 +153,13 @@ const EnhancementInterface: React.FC<EnhancementInterfaceProps> = ({
                   key={value}
                   onClick={() => setScale(value as 2 | 3 | 4)}
                   css={scaleButtonStyle(scale === value)}
-                  disabled={isGuest && value > 2} // Khóa 3x và 4x khi là guest
+                  disabled={isGuest && value > 2}
                 >
                   {value}x
                 </button>
               ))}
             </div>
           </div>
-          {/* Di chuyển nút Lưu và Quay lại xuống dưới cùng */}
           <div css={actionButtonsStyle}>
             <button onClick={handleSaveAndDownload} css={submitButtonStyle}>
               <span css={iconStyle}>
