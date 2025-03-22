@@ -3,10 +3,10 @@ import React from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import SettingUI from "../components/Settingsui"; // Sửa tên import cho đúng (SettingUI thay vì Settingui)
+import Settingui from "../components/Settingsui"; // Đúng tên import
 
 const Settings: React.FC = () => {
-  const [tab, setTab] = React.useState(0); // Tab mặc định là 0 thay vì -1
+  const [tab, setTab] = React.useState(0); // Tab mặc định là 0
   const navigate = useNavigate();
 
   const handleTabChange = (newTab: number) => {
@@ -28,7 +28,7 @@ const Settings: React.FC = () => {
         <Header tab={tab} setTab={handleTabChange} />
       </Box>
       <Box sx={{ flex: 1, marginTop: "64px" }}>
-        <SettingUI />
+        <Settingui tab={tab} setTab={handleTabChange} />
       </Box>
     </Box>
   );

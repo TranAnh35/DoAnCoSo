@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { UserRegister, UserSignin, AuthResponse, GuestSessionResponse, ImageHistoryRequest, ImageHistoryResponse, QualityEvaluationResponse, ProcessImageResponse } from '../types/api';
 
-const API_URL = 'http://localhost:8000'; // URL của backend FastAPI
+const API_URL = 'http://localhost:8000'; 
 
 const api = axios.create({
   baseURL: API_URL,
@@ -11,6 +11,11 @@ const api = axios.create({
   },
 });
 
+const getUserIdFromLocalStorage = (): number | undefined => {
+  const userId = localStorage.getItem('user_id');
+  return userId ? parseInt(userId) : undefined;
+};
+
 export const registerUser = async (data: UserRegister): Promise<AuthResponse> => {
   const response = await api.post<AuthResponse>('/register', data);
   return response.data;
@@ -18,6 +23,18 @@ export const registerUser = async (data: UserRegister): Promise<AuthResponse> =>
 
 export const signinUser = async (data: UserSignin): Promise<AuthResponse> => {
   const response = await api.post<AuthResponse>('/signin', data);
+  return response.data;
+};
+
+export const getInformation = async (userId?: number, info: string = 'username'): Promise<any> => {
+  const effectiveUserId = userId ?? getUserIdFromLocalStorage();
+  if (!effectiveUserId) {
+    throw new Error('User ID is required. Please sign in.');
+  }
+
+  const response = await api.get<any>(`/user/info`, {
+    params: { user_id: effectiveUserId, info },
+  });
   return response.data;
 };
 
@@ -47,7 +64,7 @@ export const removeImageHistory = async (sessionId: number): Promise<{ message: 
   return response.data;
 };
 
-export const processImage = async (  file: File,  scale: number): Promise<ProcessImageResponse> => {
+export const processImage = async (file: File, scale: number): Promise<ProcessImageResponse> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('scale', scale.toString());

@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   Button,
@@ -9,6 +9,7 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
+import { useSnackbar } from "notistack";
 import Header from "./Header";
 import {
   mainContainerStyle,
@@ -18,15 +19,113 @@ import {
   sectionContentStyle,
   changeButtonStyle,
 } from "../styles/setting";
+import { getInformation } from "../services/api";
 
-const Settingui: React.FC = () => {
-  const [tab] = React.useState(0);
-  const [openAccountModal, setOpenAccountModal] = React.useState(false);
-  const [openPasswordModal, setOpenPasswordModal] = React.useState(false);
+const logUserId = () => {
+  const userId = localStorage.getItem("user_id");
+  console.log(
+    userId ? `User ID: ${parseInt(userId)}` : "No User ID in localStorage"
+  );
+};
 
+const Settingui: React.FC<{ tab: number; setTab: (tab: number) => void }> = ({
+  tab,
+  setTab,
+}) => {
+  const [openAccountModal, setOpenAccountModal] = useState(false);
+  const [openPasswordModal, setOpenPasswordModal] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [username, setUsername] = useState<string>("Not set");
+  const [email, setEmail] = useState<string>("Not set");
+  const [newUsername, setNewUsername] = useState<string>("");
+  const [newEmail, setNewEmail] = useState<string>("");
+  const [usernameError, setUsernameError] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [oldPassword, setOldPassword] = useState<string>("");
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+  const [userId, setUserId] = useState<number | undefined>(() =>
+    localStorage.getItem("user_id")
+      ? parseInt(localStorage.getItem("user_id")!)
+      : undefined
+  );
+  const [sessionId, setSessionId] = useState<number | undefined>(() =>
+    localStorage.getItem("guest")
+      ? parseInt(localStorage.getItem("guest")!)
+      : undefined
+  );
+
+  useEffect(() => {
+    const syncUserInfo = () => {
+      const storedUserId = localStorage.getItem("user_id")
+        ? parseInt(localStorage.getItem("user_id")!)
+        : undefined;
+      const storedSessionId = localStorage.getItem("guest")
+        ? parseInt(localStorage.getItem("guest")!)
+        : undefined;
+      setUserId(storedUserId);
+      setSessionId(storedSessionId);
+      logUserId();
+    };
+
+    window.addEventListener("storage", syncUserInfo);
+    syncUserInfo();
+
+    return () => window.removeEventListener("storage", syncUserInfo);
+  }, []);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (!userId && !sessionId) {
+        enqueueSnackbar("Please sign in to view account information", {
+          variant: "warning",
+        });
+        setUsername("Not set");
+        setEmail("Not set");
+        setNewUsername("");
+        setNewEmail("");
+        return;
+      }
+
+      try {
+        if (userId) {
+          const [usernameData, emailData] = await Promise.all([
+            getInformation(userId, "username"),
+            getInformation(userId, "email"),
+          ]);
+          const fetchedUsername =
+            typeof usernameData === "string"
+              ? usernameData
+              : usernameData?.username || "Not set";
+          const fetchedEmail =
+            typeof emailData === "string"
+              ? emailData
+              : emailData?.email || "Not set";
+          setUsername(fetchedUsername);
+          setEmail(fetchedEmail);
+          setNewUsername(fetchedUsername === "Not set" ? "" : fetchedUsername);
+          setNewEmail(fetchedEmail === "Not set" ? "" : fetchedEmail);
+        } else {
+          setUsername("Guest");
+          setEmail("Not available for guest");
+          setNewUsername("");
+          setNewEmail("");
+        }
+      } catch (error: any) {
+        console.error("Failed to fetch user info:", error);
+        enqueueSnackbar(error.message || "Failed to load user information", {
+          variant: "error",
+        });
+      }
+    };
+
+    fetchUserInfo();
+  }, [userId, sessionId, enqueueSnackbar]);
   return (
     <>
-      <Header tab={tab} setTab={() => {}} />
+      <Header tab={tab} setTab={setTab} />
       <div css={mainContainerStyle}>
         <div css={contentStyle}>
           <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
@@ -41,16 +140,17 @@ const Settingui: React.FC = () => {
               <Button
                 css={changeButtonStyle}
                 onClick={() => setOpenAccountModal(true)}
+                disabled={!userId}
               >
                 Change
               </Button>
             </div>
             <div css={sectionContentStyle}>
               <Typography variant="body2" sx={{ color: "#6b7280", mb: 1 }}>
-                Username: Not set
+                Username: {username}
               </Typography>
               <Typography variant="body2" sx={{ color: "#6b7280" }}>
-                Email: Not set
+                Email: {email}
               </Typography>
             </div>
           </div>
@@ -63,6 +163,7 @@ const Settingui: React.FC = () => {
               <Button
                 css={changeButtonStyle}
                 onClick={() => setOpenPasswordModal(true)}
+                disabled={!userId}
               >
                 Change
               </Button>
@@ -89,6 +190,10 @@ const Settingui: React.FC = () => {
               fullWidth
               variant="outlined"
               placeholder="Enter new username"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              error={!!usernameError}
+              helperText={usernameError}
             />
             <TextField
               margin="dense"
@@ -98,7 +203,10 @@ const Settingui: React.FC = () => {
               fullWidth
               variant="outlined"
               placeholder="Enter new email"
-              required
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              error={!!emailError}
+              helperText={emailError}
             />
           </DialogContent>
           <DialogActions>
@@ -122,6 +230,8 @@ const Settingui: React.FC = () => {
               fullWidth
               variant="outlined"
               placeholder="Enter your current password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
               required
             />
             <TextField
@@ -132,6 +242,8 @@ const Settingui: React.FC = () => {
               fullWidth
               variant="outlined"
               placeholder="Enter your new password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
               required
             />
             <TextField
@@ -142,6 +254,8 @@ const Settingui: React.FC = () => {
               fullWidth
               variant="outlined"
               placeholder="Re-type the new password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </DialogContent>
