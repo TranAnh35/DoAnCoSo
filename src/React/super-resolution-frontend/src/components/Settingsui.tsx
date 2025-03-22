@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Typography,
   Button,
@@ -9,7 +9,6 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
-import { useSnackbar } from "notistack";
 import Header from "./Header";
 import {
   mainContainerStyle,
@@ -19,135 +18,66 @@ import {
   sectionContentStyle,
   changeButtonStyle,
 } from "../styles/setting";
-import { getInformation } from "../services/api";
+import { useSetting } from "../hooks/useSetting"; // Import hook
 
-const logUserId = () => {
-  const userId = localStorage.getItem("user_id");
-  console.log(
-    userId ? `User ID: ${parseInt(userId)}` : "No User ID in localStorage"
-  );
-};
+const Settingui: React.FC<{ tab: number; setTab: (tab: number) => void }> = ({ tab, setTab }) => {
+  const {
+    openAccountModal,
+    setOpenAccountModal,
+    openPasswordModal,
+    setOpenPasswordModal,
+    username,
+    email,
+    newUsername,
+    setNewUsername,
+    newEmail,
+    setNewEmail,
+    usernameError,
+    setUsernameError,
+    emailError,
+    setEmailError,
+    oldPassword,
+    setOldPassword,
+    newPassword,
+    setNewPassword,
+    confirmPassword,
+    setConfirmPassword,
+    oldPasswordError,
+    setOldPasswordError,
+    newPasswordError,
+    setNewPasswordError,
+    confirmPasswordError,
+    setConfirmPasswordError,
+    userId,
+    handleAccountUpdate,
+    handlePasswordChange,
+  } = useSetting({ tab, setTab });
 
-const Settingui: React.FC<{ tab: number; setTab: (tab: number) => void }> = ({
-  tab,
-  setTab,
-}) => {
-  const [openAccountModal, setOpenAccountModal] = useState(false);
-  const [openPasswordModal, setOpenPasswordModal] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [username, setUsername] = useState<string>("Not set");
-  const [email, setEmail] = useState<string>("Not set");
-  const [newUsername, setNewUsername] = useState<string>("");
-  const [newEmail, setNewEmail] = useState<string>("");
-  const [usernameError, setUsernameError] = useState<string>("");
-  const [emailError, setEmailError] = useState<string>("");
-  const [oldPassword, setOldPassword] = useState<string>("");
-  const [newPassword, setNewPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-
-  const [userId, setUserId] = useState<number | undefined>(() =>
-    localStorage.getItem("user_id")
-      ? parseInt(localStorage.getItem("user_id")!)
-      : undefined
-  );
-  const [sessionId, setSessionId] = useState<number | undefined>(() =>
-    localStorage.getItem("guest")
-      ? parseInt(localStorage.getItem("guest")!)
-      : undefined
-  );
-
-  useEffect(() => {
-    const syncUserInfo = () => {
-      const storedUserId = localStorage.getItem("user_id")
-        ? parseInt(localStorage.getItem("user_id")!)
-        : undefined;
-      const storedSessionId = localStorage.getItem("guest")
-        ? parseInt(localStorage.getItem("guest")!)
-        : undefined;
-      setUserId(storedUserId);
-      setSessionId(storedSessionId);
-      logUserId();
-    };
-
-    window.addEventListener("storage", syncUserInfo);
-    syncUserInfo();
-
-    return () => window.removeEventListener("storage", syncUserInfo);
-  }, []);
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      if (!userId && !sessionId) {
-        enqueueSnackbar("Please sign in to view account information", {
-          variant: "warning",
-        });
-        setUsername("Not set");
-        setEmail("Not set");
-        setNewUsername("");
-        setNewEmail("");
-        return;
-      }
-
-      try {
-        if (userId) {
-          const [usernameData, emailData] = await Promise.all([
-            getInformation(userId, "username"),
-            getInformation(userId, "email"),
-          ]);
-          const fetchedUsername =
-            typeof usernameData === "string"
-              ? usernameData
-              : usernameData?.username || "Not set";
-          const fetchedEmail =
-            typeof emailData === "string"
-              ? emailData
-              : emailData?.email || "Not set";
-          setUsername(fetchedUsername);
-          setEmail(fetchedEmail);
-          setNewUsername(fetchedUsername === "Not set" ? "" : fetchedUsername);
-          setNewEmail(fetchedEmail === "Not set" ? "" : fetchedEmail);
-        } else {
-          setUsername("Guest");
-          setEmail("Not available for guest");
-          setNewUsername("");
-          setNewEmail("");
-        }
-      } catch (error: any) {
-        console.error("Failed to fetch user info:", error);
-        enqueueSnackbar(error.message || "Failed to load user information", {
-          variant: "error",
-        });
-      }
-    };
-
-    fetchUserInfo();
-  }, [userId, sessionId, enqueueSnackbar]);
   return (
     <>
       <Header tab={tab} setTab={setTab} />
       <div css={mainContainerStyle}>
         <div css={contentStyle}>
           <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-            My Account
+            Tài khoản của tôi
           </Typography>
 
           <div css={sectionStyle}>
             <div css={sectionTitleStyle}>
               <Typography variant="h6" sx={{ fontWeight: 500 }}>
-                Account Information
+                Thông tin tài khoản
               </Typography>
               <Button
                 css={changeButtonStyle}
                 onClick={() => setOpenAccountModal(true)}
                 disabled={!userId}
               >
-                Change
+                Thay đổi
               </Button>
             </div>
             <div css={sectionContentStyle}>
               <Typography variant="body2" sx={{ color: "#6b7280", mb: 1 }}>
-                Username: {username}
+                Tên người dùng: {username}
               </Typography>
               <Typography variant="body2" sx={{ color: "#6b7280" }}>
                 Email: {email}
@@ -158,40 +88,40 @@ const Settingui: React.FC<{ tab: number; setTab: (tab: number) => void }> = ({
           <div css={sectionStyle}>
             <div css={sectionTitleStyle}>
               <Typography variant="h6" sx={{ fontWeight: 500 }}>
-                Password
+                Mật khẩu
               </Typography>
               <Button
                 css={changeButtonStyle}
                 onClick={() => setOpenPasswordModal(true)}
                 disabled={!userId}
               >
-                Change
+                Thay đổi
               </Button>
             </div>
             <div css={sectionContentStyle}>
               <Typography variant="body2" sx={{ color: "#6b7280" }}>
-                Update your password to secure your account.
+                Cập nhật mật khẩu để bảo vệ tài khoản của bạn.
               </Typography>
             </div>
           </div>
         </div>
 
-        <Dialog
-          open={openAccountModal}
-          onClose={() => setOpenAccountModal(false)}
-        >
-          <DialogTitle>Edit Account Information</DialogTitle>
+        <Dialog open={openAccountModal} onClose={() => setOpenAccountModal(false)}>
+          <DialogTitle>Chỉnh sửa thông tin tài khoản</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
               margin="dense"
-              label="Username"
+              label="Tên người dùng"
               name="username"
               fullWidth
               variant="outlined"
-              placeholder="Enter new username"
+              placeholder="Nhập tên người dùng mới"
               value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
+              onChange={(e) => {
+                setNewUsername(e.target.value);
+                if (usernameError) setUsernameError("");
+              }}
               error={!!usernameError}
               helperText={usernameError}
             />
@@ -202,66 +132,80 @@ const Settingui: React.FC<{ tab: number; setTab: (tab: number) => void }> = ({
               type="email"
               fullWidth
               variant="outlined"
-              placeholder="Enter new email"
+              placeholder="Nhập email mới"
               value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
+              onChange={(e) => {
+                setNewEmail(e.target.value);
+                if (emailError) setEmailError("");
+              }}
               error={!!emailError}
               helperText={emailError}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setOpenAccountModal(false)}>Cancel</Button>
-            <Button variant="contained">Save</Button>
+            <Button onClick={() => setOpenAccountModal(false)}>Hủy</Button>
+            <Button variant="contained" onClick={handleAccountUpdate}>Lưu</Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
-          open={openPasswordModal}
-          onClose={() => setOpenPasswordModal(false)}
-        >
-          <DialogTitle>Change Password</DialogTitle>
+        <Dialog open={openPasswordModal} onClose={() => setOpenPasswordModal(false)}>
+          <DialogTitle>Đổi mật khẩu</DialogTitle>
           <DialogContent>
             <TextField
-              autoFocus
               margin="dense"
-              label="Old Password"
+              label="Mật khẩu cũ"
               name="oldPassword"
               type="password"
               fullWidth
               variant="outlined"
-              placeholder="Enter your current password"
+              placeholder="Nhập mật khẩu cũ"
               value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
+              onChange={(e) => {
+                setOldPassword(e.target.value);
+                if (oldPasswordError) setOldPasswordError("");
+              }}
+              error={!!oldPasswordError}
+              helperText={oldPasswordError}
               required
             />
             <TextField
               margin="dense"
-              label="New Password"
+              label="Mật khẩu mới"
               name="newPassword"
               type="password"
               fullWidth
               variant="outlined"
-              placeholder="Enter your new password"
+              placeholder="Nhập mật khẩu mới"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e) => {
+                setNewPassword(e.target.value);
+                if (newPasswordError) setNewPasswordError("");
+              }}
+              error={!!newPasswordError}
+              helperText={newPasswordError}
               required
             />
             <TextField
               margin="dense"
-              label="Confirm Password"
+              label="Xác nhận mật khẩu"
               name="confirmPassword"
               type="password"
               fullWidth
               variant="outlined"
-              placeholder="Re-type the new password"
+              placeholder="Nhập lại mật khẩu mới"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                if (confirmPasswordError) setConfirmPasswordError("");
+              }}
+              error={!!confirmPasswordError}
+              helperText={confirmPasswordError}
               required
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setOpenPasswordModal(false)}>Cancel</Button>
-            <Button variant="contained">Save</Button>
+            <Button onClick={() => setOpenPasswordModal(false)}>Hủy</Button>
+            <Button variant="contained" onClick={handlePasswordChange}>Lưu</Button>
           </DialogActions>
         </Dialog>
       </div>

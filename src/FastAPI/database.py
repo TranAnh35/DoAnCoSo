@@ -7,12 +7,13 @@ import bcrypt
 import uuid
 import cv2
 import re
-
+import os
+from dotenv import load_dotenv
 # URL kết nối PostgreSQL
-URL_DATABASE = 'postgresql://test:123456@localhost:23/postgres'
+load_dotenv()
 
 # Tạo engine và session
-engine = create_engine(URL_DATABASE)
+engine = create_engine(os.getenv('URL_DATABASE'))
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -31,50 +32,58 @@ Khi đang ở trong Register Form đã nhập đầy đủ thông tin và không
 Khi có lỗi xảy ra thì khi nhất nút sẽ không chuyển sang Sign_in Form nữa mà giữ nguyên
 """
 
+def check_username(username: str):
+    if not username:
+        return "Tên người dùng không được để trống"
+    if len(username) < 3:
+        return "Tên người dùng phải có ít nhất 3 ký tự"
+    return None
+
+def check_email(email: str):
+    if not email:
+        return "Email không được để trống"
+    if "@" not in email:
+        return "Email phải chứa ký tự '@'"
+    local_part, domain_part = email.split("@", 1)
+    if not local_part:
+        return "Phần trước '@' không được để trống"
+    elif not domain_part:
+        return "Phần sau '@' không được để trống"
+    elif "." not in domain_part:
+        return "Phần tên miền phải chứa ít nhất một dấu chấm (.)"
+    else:
+        domain, tld = domain_part.rsplit(".", 1)
+        if not domain:
+            return "Tên miền không được để trống"
+        elif not tld:
+            return "Phần mở rộng tên miền (TLD) không được để trống"
+        else:
+            email_regex = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+            if not re.match(email_regex, email):
+                return "Email chứa ký tự không hợp lệ"
+    return None
+
+def check_password(password: str):
+    if not password:
+        return "Mật khẩu không được để trống"
+    if len(password) < 8:
+        return "Mật khẩu phải có ít nhất 8 ký tự"
+    if not re.search(r"[A-Z]", password):
+        return "Mật khẩu phải chứa ít nhất một chữ cái in hoa!"
+    if not re.search(r"[a-z]", password):
+        return "Mật khẩu phải chứa ít nhất một chữ cái thường!"
+    if not re.search(r"[0-9]", password):
+        return "Mật khẩu phải chứa ít nhất một số!"
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return "Mật khẩu phải chứa ít nhất một ký tự đặc biệt!"
+    return None
+
 def register_user(db: Session, username: str, email: str, password: str) -> tuple[Optional[int], Dict[str, str], bool]:
     errors: Dict[str, str] = {}
 
-    if not username:
-        errors["username"] = "Vui lòng nhập tên người dùng!"
-    if not email:
-        errors["email"] = "Vui lòng nhập email!"
-    if not password:
-        errors["password"] = "Vui lòng nhập mật khẩu!"
-
-    if errors:
-        return None, errors, False
-
-    if "@" not in email:
-        errors["email"] = "Email phải chứa ký tự '@'!"
-    else:
-        local_part, domain_part = email.split("@", 1)  # Chia email thành local part và domain part
-        if not local_part:
-            errors["email"] = "Phần trước '@' không được để trống!"
-        elif not domain_part:
-            errors["email"] = "Phần sau '@' không được để trống!"
-        elif "." not in domain_part:
-            errors["email"] = "Phần tên miền phải chứa ít nhất một dấu chấm (.)!"
-        else:
-            domain, tld = domain_part.rsplit(".", 1)  # Chia domain part thành domain và TLD
-            if not domain:
-                errors["email"] = "Tên miền không được để trống!"
-            elif not tld:
-                errors["email"] = "Phần mở rộng tên miền (TLD) không được để trống!"
-            else:
-                email_regex = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-                if not re.match(email_regex, email):
-                    errors["email"] = "Email chứa ký tự không hợp lệ!"
-
-    if len(password) < 8:
-        errors["password"] = "Mật khẩu phải có ít nhất 8 ký tự!"
-    elif not re.search(r"[A-Z]", password):
-        errors["password"] = "Mật khẩu phải chứa ít nhất một chữ cái in hoa!"
-    elif not re.search(r"[a-z]", password):
-        errors["password"] = "Mật khẩu phải chứa ít nhất một chữ cái thường!"
-    elif not re.search(r"[0-9]", password):
-        errors["password"] = "Mật khẩu phải chứa ít nhất một số!"
-    elif not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-        errors["password"] = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt!"
+    errors["username"] = check_username(username)
+    errors["email"] = check_email(email)
+    errors["password"] = check_password(password)
 
     if errors:
         return None, errors, False
@@ -153,7 +162,7 @@ def get_information(db, user_id=None, info="username"):
     
     return getattr(user, info, None)
 
-def change_password(db, user_id, old_password, new_password, confirm_password):
+def change_password(db, user_id, old_password, new_password):
     error = {}
     
     if user_id is None:
@@ -162,23 +171,51 @@ def change_password(db, user_id, old_password, new_password, confirm_password):
         error['old_password'] = "Mật khẩu cũ không hợp lệ"
     if new_password is None:
         error['new_password'] = "Mật khẩu mới không hợp lệ"
-    if confirm_password is None:
-        error['confirm_password'] = "Xác nhận mật khẩu không hợp lệ"
+        
+    if error:
+        return error, False
+    
+    pass_error = check_password(new_password)
+    if pass_error:
+        error['new_password'] = pass_error
+    
+    if error:
+        return error, False
 
     from schemas import User
-    user = db.query(User).filter(User.user_id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
         raise ValueError("User không tồn tại")
+    
+    if not bcrypt.checkpw(old_password.encode('utf-8'), user.password.encode('utf-8')):
+        error['old_password'] = "Mật khẩu cũ không đúng"
+        return error, False
 
     hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     user.password = hashed_password
     db.commit()
     
+    return {}, True
+
 def change_information(db, user_id, new_username, new_email):
     if user_id is None:
         raise ValueError("User ID không hợp lệ")
+    
+    errors = {}
+    
+    user_error = check_username(new_username)
+    if user_error:
+        errors['new_username'] = user_error
+    
+    email_error = check_email(new_email)
+    if email_error:
+        errors['new_email'] = email_error
+            
+    
+    if errors:
+        return errors, False
     
     from schemas import User
     user = db.query(User).filter(User.id == user_id).first()
@@ -186,13 +223,26 @@ def change_information(db, user_id, new_username, new_email):
     if not user:
         raise ValueError("User not found")
     
+    if user.username == new_username.lower() and user.email == new_email:
+        return "Don't change anything", False
+    
+    if db.query(User).filter(User.username == new_username.lower()).first() and new_username.lower() != user.username:
+        errors['new_username'] = "Tên người dùng đã tồn tại"
+    if db.query(User).filter(User.email == new_email).first() and new_email != user.email:
+        errors['new_email'] = "Email đã tồn tại"
+    
+    if errors:
+        return errors, False
+    
     if new_username:
-        user.username = new_username
+        user.username = new_username.lower()
     
     if new_email:
         user.email = new_email
     
     db.commit()
+    
+    return {}, True
 
 def create_guest_session(db):
     from schemas import GuestSession

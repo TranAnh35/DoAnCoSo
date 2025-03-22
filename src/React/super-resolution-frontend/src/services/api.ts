@@ -38,6 +38,24 @@ export const getInformation = async (userId?: number, info: string = 'username')
   return response.data;
 };
 
+export const changePassword = async (userId: number, oldPassword: string, newPassword: string): Promise<{ message: string | { [key: string]: string } }> => {
+  const response = await api.post<{ message: string | { [key: string]: string } }>(`/user/change-password`, {
+    user_id: userId,
+    old_password: oldPassword,
+    new_password: newPassword,
+  });
+  return response.data;
+};
+
+export const changeInformation = async (userId: number, newUsername: string, newEmail: string): Promise<{ message: string | { [key: string]: string } }> => {
+  const response = await api.post<{ message: string | { [key: string]: string } }>(`/user/change-information`, {
+    user_id: userId,
+    new_username: newUsername,
+    new_email: newEmail,
+  }); 
+  return response.data;
+}
+
 export const createGuestSession = async (): Promise<GuestSessionResponse> => {
   const response = await api.post<GuestSessionResponse>('/guest/create');
   return response.data;

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from database import get_db, register_user, signin_user, get_information, create_guest_session, drop_guest_session, save_image_history, remove_image_history, get_image_history
+from database import get_db, register_user, signin_user, get_information, change_password, change_information, create_guest_session, drop_guest_session, save_image_history, remove_image_history, get_image_history
 from models import process_image 
 from pydantic import BaseModel
 from typing import Optional
@@ -43,6 +43,16 @@ class ProcessImageRequest(BaseModel):
     scale: int
     user_id: Optional[int] = None
     session_id: Optional[int] = None
+    
+class ChangePasswordRequest(BaseModel):
+    user_id: int
+    old_password: str
+    new_password: str
+    
+class ChangeInformationRequest(BaseModel):
+    user_id: int
+    new_username: str
+    new_email: str
 
 @app.post("/register")
 def register(user: UserRegister, db: Session = Depends(get_db)):
@@ -62,6 +72,20 @@ def user_info(user_id: int, info: str = "username", db: Session = Depends(get_db
     if result is None:
         raise HTTPException(status_code=404, detail="User not found")
     return {info: result}
+
+@app.post("/user/change-password")
+def user_change_password(request: ChangePasswordRequest, db: Session = Depends(get_db)):
+    error, success = change_password(db, request.user_id, request.old_password, request.new_password)
+    if success:
+        return {"message": "Password changed successfully"}
+    return {"message": error}
+
+@app.post("/user/change-information")
+def user_change_information(request: ChangeInformationRequest, db: Session = Depends(get_db)):
+    error, success = change_information(db, request.user_id, request.new_username, request.new_email)
+    if success:
+        return {"message": "Information changed successfully"}
+    return {"message": error}
 
 @app.post("/guest/create")
 def create_guest(db: Session = Depends(get_db)):
