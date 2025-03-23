@@ -81,9 +81,16 @@ def check_password(password: str):
 def register_user(db: Session, username: str, email: str, password: str) -> tuple[Optional[int], Dict[str, str], bool]:
     errors: Dict[str, str] = {}
 
-    errors["username"] = check_username(username)
-    errors["email"] = check_email(email)
-    errors["password"] = check_password(password)
+    user_error = check_username(username)
+    if user_error:
+        errors["username"] = user_error
+    email_error = check_email(email)
+    if email_error:
+        errors["email"] = email_error
+    password_error = check_password(password)
+    if password_error:
+        errors["password"] = password_error
+        
 
     if errors:
         return None, errors, False
