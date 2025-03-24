@@ -168,7 +168,7 @@ export const useSetting = ({ tab, setTab }: SettingProps): SettingHookReturn => 
 
   return {
     openAccountModal,
-    setOpenAccountModal: handleOpenAccountModal,
+    setOpenAccountModal,
     openPasswordModal,
     setOpenPasswordModal,
     username,
