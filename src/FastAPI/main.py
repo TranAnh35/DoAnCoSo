@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from database import get_db, register_user, signin_user, get_information, change_password, change_information, create_guest_session, drop_guest_session, save_image_history, remove_image_history, get_image_history
+from database import init_db, get_db, register_user, signin_user, get_information, change_password, change_information, create_guest_session, drop_guest_session, save_image_history, remove_image_history, get_image_history
 from models import process_image 
 from pydantic import BaseModel
 from typing import Optional
@@ -10,6 +10,7 @@ import numpy as np
 from base64 import b64encode, b64decode
 from basicsr.metrics import calculate_psnr, calculate_ssim
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 app = FastAPI()
 app.add_middleware(
@@ -53,6 +54,11 @@ class ChangeInformationRequest(BaseModel):
     user_id: int
     new_username: str
     new_email: str
+    
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
 
 @app.post("/register")
 def register(user: UserRegister, db: Session = Depends(get_db)):
